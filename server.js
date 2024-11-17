@@ -28,11 +28,13 @@ http.createServer( function (request, response) {
             response.writeHead(200, {'Content-Type': 'text/css'});
         }else if(pathname.indexOf('.js') > -1){
             response.writeHead(200, {'Content-Type': 'text/javascript'});
+        }else if(pathname.indexOf('.jpg') > -1){
+            response.writeHead(200, {'Content-Type': 'image/jpg'});
         }else{          
             response.writeHead(200, {'Content-Type': 'text/html'}); 
         }  
         // 响应文件内容
-         response.write(data.toString());        
+         response.write(data, "binary");        
       }
       //  发送响应数据
       response.end();
