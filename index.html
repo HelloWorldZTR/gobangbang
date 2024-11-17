@@ -18,8 +18,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#settings">Settings</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Load</a>
@@ -34,7 +34,63 @@
         </div>
     </nav>
 </header>
+
 <body>
+    <!-- Settings Modal -->
+    <div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="settings" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="settings-title">Settings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="config-form">
+                        <div class="form-group">
+                            <label for="yourcolor">Your Color</label>
+                            <input type="radio" name="yourcolor" value="black" checked>Black
+                            <input type="radio" name="yourcolor" value="white">White
+                        </div>
+                        <div class="form-group">
+                            <label for="enableai">Enable AI</label>
+                            <input type="checkbox" name="enableai" value="true" checked>
+                        </div>
+                        <div class="form-group">
+                            <lable for="allowregret">Allow Regret</lable>
+                            <input type="checkbox" name="allowregret" value="true" checked>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select name="language">
+                                <option value="en">English</option>
+                                <option value="zh">Chinese</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="colorscheme">Color Scheme</label>
+                            <select name="colorscheme">
+                                <option value="light">Light</option>
+                                <option value="dark">Dark</option>
+                                <option value="auto">System Setting</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="music">BGM</label>
+                            <input type="checkbox" name="music" value="true" checked>
+                            <label for="volume">Volume</label>
+                            <input type="range" name="volume" min="0" max="100" value="50">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="update">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="row">
             <!--Game Board Column-->
@@ -50,37 +106,59 @@
             </div>
             <!--Sidebar-->
             <div class="col-md-4" id="sidebar">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Game Info</h3>
-                        </div>
-                        <div class="card-body">
-                            <!--Timer-->
-                            <p id="timer">Time Elapsed: 00:00:00</p>
-                        </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Game Info</h3>
                     </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Options</h3>
-                        </div>
-                        <div class="card-body">
-                            <!--button group-->
-                            <div class="btn-group">
-                                <button class="btn btn-primary" id="easy">Easy</button>
-                                <button class="btn btn-primary" id="medium">Medium</button>
-                                <button class="btn btn-primary" id="hard">Hard</button>
+                    <div class="card-body">
+                        <!--Timer-->
+                        <p>Time Elapsed: <span id="timer"> 00:00:00</span></p>
+                        <!--Player-->
+                        <p>Player: <span id="player">X</span></p>
+                    </div>
+                </div>
+                <!--Game History-->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Game History</h3>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#history"
+                            aria-expanded="false" aria-controls="history">
+                            Show History
+                        </button>
+                        <div class="collapse" id="history">
+                            <div class="card card-body">
+                                <ul id="historylist">
+                                    <li>History Item</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Debug Info</h3>
+                </div>
+                <!--Options-->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Options</h3>
+                    </div>
+                    <div class="card-body">
+                        <!--button group-->
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="easy">Easy</button>
+                            <button class="btn btn-primary" id="medium">Medium</button>
+                            <button class="btn btn-primary" id="hard">Hard</button>
                         </div>
-                        <div class="card-body">
-                            <p id="mousepos"></p>
-                            <p id="selected"></p>
-                        </div>
-                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Debug Info</h3>
+                    </div>
+                    <div class="card-body">
+                        <p id="mousepos"></p>
+                        <p id="selected"></p>
+                    </div>
+                </div>
 
             </div>
         </div>

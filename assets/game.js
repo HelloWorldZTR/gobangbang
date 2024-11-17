@@ -27,11 +27,19 @@ class Game {
         return this.whoseTurn;
     }
     setCell(i, j) {
-        err = this.board.setCell(i, j, this.getWhoseTurn());
+        let err = this.board.setCell(i, j, this.getWhoseTurn());
         if(err==null){
             let move = new Move(this.getWhoseTurn(), [i, j]);
-            this.whoseTurn = this.whoseTurn === BLACK ? WHITE : BLACK;
+            this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
             this.history.push(move);
+            if(enableAI) {
+                // Call the AI to make a move
+                let ai_move = nextMove(JSON.stringify(this.getBoard()));
+                ai_move = JSON.parse(move);
+                move = new Move(this.getWhoseTurn(), [ai_move.x, ai_move.y]);
+                this.setCell(ai_move.x, ai_move.y);
+                this.history.push(move);
+            }
             return null;
         }
         else{
@@ -41,10 +49,6 @@ class Game {
 
 }
 class Move {
-    constructor() {
-        this.playerColor = null;
-        this.position = null;
-    }
     constructor(playerColor, position) {
         this.playerColor = playerColor;
         this.position = position;
@@ -53,7 +57,7 @@ class Move {
 
 /**
  * @class Board
- * @classdesc Represents the game board.Contains the game state and rules.
+ * @classdesc Represents the game board. Contains the game state and rules.
  */
 class Board {
     constructor() {
@@ -114,7 +118,7 @@ class Board {
      * @returns {string} - The reason why the move is illegal, or null if the move is legal
      */
     checkLegal(){
-        let illegal = true;
+        let illegal = false;
         let reason = "Why its illegal";
         if(illegal) return reason;
         else return null;
@@ -131,9 +135,10 @@ class Board {
             return 'The cell is already occupied';
         }
         this.cells[i][j] = value;
-        if(this.checkLegal()!=null){
+        let err = this.checkLegal();
+        if(err!=null){
             this.cells[i][j] = EMPTY;
-            return this.checkLegal();
+            return err;
         }
         else {
             return null;
@@ -148,39 +153,49 @@ class Board {
  */
 class Config {
     constructor() {
-        this.allowRegret = true;
-        this.sound = true;
-        this.soundVolume = 0.5;
-        this.playerColor = BLACK;
-        this.debug = true;
+        this.loadConfig();
+        this.enableConfig();
     }
-    /* Getters */
-    getAllowRegret() {
-        return this.allowRegret;
+    /* Update the configuration and save it in local storage */
+    updateConfig(allowRegret, sound, soundVolume, playerColor, debug, enableAI, colorScheme) {
+        this.allowRegret = allowRegret;
+        this.sound = sound;
+        this.soundVolume = soundVolume;
+        this.playerColor = playerColor;
+        this.debug = debug;
+        this.enableAI = enableAI;
+        this.colorScheme = colorScheme;
+        // Save the configuration to local storage
+        localStorage.setItem('config', JSON.stringify(this));
+        // Enable the configuration
+        this.enableConfig();
     }
-    getSound() {
-        return this.sound;
+    /* Load the configuration from local storage */
+    loadConfig() {
+        // Load the configuration from local storage
+        let config = localStorage.getItem('config');
+        if (config) {
+            Object.assign(this, JSON.parse(config));
+        }
+        else {
+            this.allowRegret = true;
+            this.sound = true;
+            this.soundVolume = 0.5;
+            this.playerColor = BLACK;
+            this.debug = true;
+            this.enableAI = true;
+            this.colorScheme = 'auto';
+        }
     }
-    getSoundVolume() {
-        return this.soundVolume;
-    }
-    getPlayerColor() {
-        return this.playerColor;
-    }
-    getDebug() {
-        return this.debug;
-    }
-    /* Setters */
-    setAllowRegret(value) {
-        this.allowRegret = value;
-    }
-    setSound(value) {
-        this.sound = value;
-    }
-    setSoundVolume(value) {
-        this.soundVolume = value;
-    }
-    setPlayerColor(value) {
-        this.playerColor = value;
+    enableConfig() {
+        if(this.debug) {
+
+        }
+        if(this.allowRegret) {
+
+        }
+        if(this.sound) {
+
+        }
     }
 }

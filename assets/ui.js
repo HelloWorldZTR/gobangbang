@@ -8,6 +8,7 @@ let game = new Game();
 let errorDisplayDiv = $('#error');
 let board = $('#board')[0];
 let timer = $('#timer');
+let updateBtn = $('#update');
 // UI variables
 let selectedPoint = null;
 let lastSelectedPoint = null;
@@ -49,10 +50,34 @@ function displayError(err) {
     errorDisplayDiv.hide();
   }, 2000);
 }
+function formatTime(time) {
+  let hours = Math.floor(time / 3600000);
+  let minutes = Math.floor(time / 60000);
+  let seconds = Math.floor(time / 1000) % 60;
+  if (minutes < 10) {
+    minutes = '0' + minutes;
+  }
+  if (seconds < 10) {
+    seconds = '0' + seconds;
+  }
+  if (hours > 0) {
+    return `${hours}:${minutes}:${seconds}`;
+  }
+  else {
+    return `${minutes}:${seconds}`;
+  }
+}
 // Event listeners
 window.addEventListener('resize', function () {
   $('#board').attr('width', getBoardSize());
   $('#board').attr('height', getBoardSize());
+  boardSize = getBoardSize();
+  offset_x = boardSize * 0.1;
+  offset_y = boardSize * 0.1;
+  width = boardSize * 0.8;
+  height = boardSize * 0.8;
+  cellSize = width / 14;
+  circleSize = cellSize * 0.4;
   drawBoard();
 });
 $(document).ready(function () {
@@ -60,8 +85,8 @@ $(document).ready(function () {
   $('#board').attr('height', getBoardSize());
   drawBoard();
 });
-$(document).setInterval(() => {
-  timer.text(game.getElapsedTime());
+setInterval(() => {
+  timer.text("Time Elapsed: " + formatTime(game.getElapsedTime()));
 }, 1000);
 board.addEventListener("mousemove", function __handler__(evt) {
   //redraw the board
@@ -111,6 +136,13 @@ board.addEventListener("mouseout", function __handler__(evt) {
   drawBoard();
   lastSelectedPoint = null;
 });
+updateBtn.click(function () {
+  //Read Configurations
+  let config = $('#config-form').serializeArray();
+  //Update the game configuration
+  game.config.updateConfig(config['allowregret'], config['music'], config['volume'], config['yourcolor'], true, config['enableai'], config['colorscheme']);
+});
+
 board.addEventListener("click", function __handler__(evt) {
   // Get the mouse position
   let x = evt.clientX;
@@ -132,7 +164,7 @@ board.addEventListener("click", function __handler__(evt) {
     }
   }
   console.log(selectedPoint);
-  let err = game.board.setCell(selectedPoint[0], selectedPoint[1], config.getPlayerColor());
+  let err = game.setCell(selectedPoint[0], selectedPoint[1]);
   if (err) {
     displayError(err);
   }
@@ -172,10 +204,12 @@ function drawBoard() {
   canvas.arc(offset_x + 7 * cellSize, offset_y + 7 * cellSize, 5, 0, 2 * Math.PI);
   canvas.fill();
   /* Draw pieces on the board */
-  for(let i = 0; i < 15; i++){
-    for(let j = 0; j < 15; j++){
-      if(game.board.cells[i][j] !== EMPTY){
+  for (let i = 0; i < 15; i++) {
+    for (let j = 0; j < 15; j++) {
+      if (game.board.cells[i][j] !== EMPTY) {
         let color = game.board.cells[i][j] === BLACK ? 'black' : 'white';
+        console.log(color);
+        console.log(game.board.cells[i][j]);
         let pointx = offset_x + i * cellSize;
         let pointy = offset_y + j * cellSize;
         canvas.fillStyle = color;
