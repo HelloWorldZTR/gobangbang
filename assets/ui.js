@@ -67,6 +67,14 @@ function formatTime(time) {
     return `${minutes}:${seconds}`;
   }
 }
+function updatePlayer() {
+  if (game.whoseTurn === BLACK) {
+    $('#player').text('Black⚫');
+  }
+  else {
+    $('#player').text('White⚪');
+  }
+}
 // Event listeners
 window.addEventListener('resize', function () {
   $('#board').attr('width', getBoardSize());
@@ -80,13 +88,24 @@ window.addEventListener('resize', function () {
   circleSize = cellSize * 0.4;
   drawBoard();
 });
+window.addEventListener('message', function (event) {
+  let data = JSON.parse(event.data);
+  if (data.type === 'update') {
+    
+  }
+  else if(data.type === 'err') {
+    displayError(data.msg);
+  } else if(data.type === 'win') {
+    $('#win').modal('show');
+  }
+});
 $(document).ready(function () {
   $('#board').attr('width', getBoardSize());
   $('#board').attr('height', getBoardSize());
   drawBoard();
 });
 setInterval(() => {
-  timer.text("Time Elapsed: " + formatTime(game.getElapsedTime()));
+  timer.text(formatTime(game.getElapsedTime()));
 }, 1000);
 board.addEventListener("mousemove", function __handler__(evt) {
   //redraw the board
@@ -133,16 +152,17 @@ board.addEventListener("mousemove", function __handler__(evt) {
 });
 board.addEventListener("mouseout", function __handler__(evt) {
   //remove the hover effect
-  drawBoard();
   lastSelectedPoint = null;
+  drawBoard();
 });
 updateBtn.click(function () {
   //Read Configurations
   let config = $('#config-form').serializeArray();
   //Update the game configuration
-  game.config.updateConfig(config['allowregret'], config['music'], config['volume'], config['yourcolor'], true, config['enableai'], config['colorscheme']);
+  game.config.updateConfig(config[0].value, config[1].value, config[2].value, config[3].value, true, config[4].value, config[5].value);
+  console.log(config);
+  $('#settings').modal('hide');
 });
-
 board.addEventListener("click", function __handler__(evt) {
   // Get the mouse position
   let x = evt.clientX;
@@ -163,11 +183,7 @@ board.addEventListener("click", function __handler__(evt) {
       }
     }
   }
-  console.log(selectedPoint);
-  let err = game.setCell(selectedPoint[0], selectedPoint[1]);
-  if (err) {
-    displayError(err);
-  }
+  game.setCell(selectedPoint[0], selectedPoint[1]);
 });
 // Render functions
 function drawBoard() {
@@ -208,8 +224,6 @@ function drawBoard() {
     for (let j = 0; j < 15; j++) {
       if (game.board.cells[i][j] !== EMPTY) {
         let color = game.board.cells[i][j] === BLACK ? 'black' : 'white';
-        console.log(color);
-        console.log(game.board.cells[i][j]);
         let pointx = offset_x + i * cellSize;
         let pointy = offset_y + j * cellSize;
         canvas.fillStyle = color;
