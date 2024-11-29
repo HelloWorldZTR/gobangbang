@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bootstrap Template</title>
     <link rel="stylesheet" href="assets/style.css">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="includes/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <header>
@@ -49,17 +49,18 @@
                 <div class="modal-body">
                     <form id="config-form">
                         <div class="form-group">
-                            <label for="yourcolor">Your Color</label>
-                            <input type="radio" name="yourcolor" value="black" checked>Black
-                            <input type="radio" name="yourcolor" value="white">White
+                            <label for="playerColor">Your Color</label>
+                            <input class="player-color" type="radio" name="playerColor" value="black" checked>Black
+                            <input class="player-color" type="radio" name="playerColor" value="white">White
+                            <span id="save-warn" class="warn" style="display:none;">You have changed your side. Saving changes will cause the game to restart.</span>
                         </div>
                         <div class="form-group">
-                            <label for="enableai">Enable AI</label>
-                            <input type="checkbox" name="enableai" value="true" checked>
+                            <label for="enableAI">Enable AI</label>
+                            <input type="checkbox" name="enableAI" value="true" checked>
                         </div>
                         <div class="form-group">
-                            <lable for="allowregret">Allow Regret</lable>
-                            <input type="checkbox" name="allowregret" value="true" checked>
+                            <lable for="allowRegret">Allow Regret</lable>
+                            <input type="checkbox" name="allowRegret" value="true" checked>
                         </div>
                         <div class="form-group">
                             <label for="language">Language</label>
@@ -69,18 +70,18 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="colorscheme">Color Scheme</label>
-                            <select name="colorscheme">
+                            <label for="colorScheme">Color Scheme</label>
+                            <select name="colorScheme">
                                 <option value="light">Light</option>
                                 <option value="dark">Dark</option>
                                 <option value="auto">System Setting</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="music">BGM</label>
-                            <input type="checkbox" name="music" value="true" checked>
-                            <label for="volume">Volume</label>
-                            <input type="range" name="volume" min="0" max="100" value="50">
+                            <label for="sound">BGM</label>
+                            <input type="checkbox" name="sound" value="true" checked>
+                            <label for="soundVolume">Volume</label>
+                            <input type="range" name="soundVolume" min="0" max="100" value="50">
                         </div>
                     </form>
                 </div>
@@ -120,13 +121,12 @@
                 <!--Game History-->
                 <div class="card">
                     <div class="card-header">
-                        <h3>Game History</h3>
-                    </div>
-                    <div class="card-body">
-                        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#history"
+                        <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#history"
                             aria-expanded="false" aria-controls="history">
                             Show History
                         </button>
+                    </div>
+                    <div class="card-body">
                         <div class="collapse" id="history">
                             <div class="card card-body">
                                 <ul id="historylist">
@@ -163,11 +163,12 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="includes/jquery-3.5.1.slim.min.js"></script>
     <script src="assets/game.js"></script>
     <script src="assets/ui.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="includes/popper.min.js"></script>
+    <script src="includes/bootstrap.min.js"></script>
+    <script src="includes/jquery.i18n.properties.js"></script>
 </body>
 
 </html>
