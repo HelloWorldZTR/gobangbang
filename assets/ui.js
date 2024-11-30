@@ -33,7 +33,7 @@ function getClientHeight() {
   return window.innerHeight - $('header').height();
 }
 function getClietWidth() {
-  return window.innerWidth - $('#sidebar').width();
+  return window.innerWidth*0.6*0.667;
 }
 function getBoardSize() {
   return Math.min(getClientHeight(), getClietWidth());
@@ -118,15 +118,21 @@ board.addEventListener("mousemove", function __handler__(evt) {
   if (selectedPoint != null) {
     let pointx = offset_x + selectedPoint[0] * cellSize;
     let pointy = offset_y + selectedPoint[1] * cellSize;
-    canvas.fillStyle = 'blue';
+    canvas.fillStyle = game.getWhoseTurn()===BLACK?'rgba(0,0,0,0.6)':'rgba(255,255,255,0.6)';
     canvas.beginPath();
     canvas.arc(pointx, pointy, circleSize + 1, 0, 2 * Math.PI);
     canvas.fill();
     //Set the cursor to pointer
-    board.style.cursor = 'pointer';
+    if(!game.waiting)
+      board.style.cursor = 'pointer';
+    else 
+      board.style.cursor='wait';
   }
   else {
-    board.style.cursor = 'default';
+    if(!game.waiting)
+      board.style.cursor = 'default';
+    else 
+      board.style.cursor='wait';
     //remove the hover effect
     drawBoard();
     lastSelectedPoint = null;
@@ -156,6 +162,13 @@ $('.player-color').toArray().forEach((cur)=>{
       $('#save-warn').css('display', 'none');
     }
   })
+});
+$('#regret').click(function () {
+  let err = game.regret();
+  if (err) {
+    displayError(err);
+  }
+  drawBoard();
 });
 board.addEventListener("click", function __handler__(evt) {
   // Get the mouse position

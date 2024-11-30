@@ -52,7 +52,8 @@
                             <label for="playerColor">Your Color</label>
                             <input class="player-color" type="radio" name="playerColor" value="black" checked>Black
                             <input class="player-color" type="radio" name="playerColor" value="white">White
-                            <span id="save-warn" class="warn" style="display:none;">You have changed your side. Saving changes will cause the game to restart.</span>
+                            <span id="save-warn" class="warn" style="display:none;">You have changed your side. Saving
+                                changes will cause the game to restart.</span>
                         </div>
                         <div class="form-group">
                             <label for="enableAI">Enable AI</label>
@@ -95,7 +96,7 @@
     <div class="container">
         <div class="row">
             <!--Game Board Column-->
-            <div class="col-md-8">
+            <div id="game-col" class="col-md-8">
                 <!--Error Display-->
                 <div class="alert alert-danger" id="error" role="alert" style="display:none;">
                     Error Message
@@ -122,17 +123,16 @@
                 <div class="card">
                     <div class="card-header">
                         <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#history"
-                            aria-expanded="false" aria-controls="history">
+                            aria-expanded="true" aria-controls="history">
                             Show History
                         </button>
+                        <button class="btn btn-primary" type="button" id="regret">Regret</button>
                     </div>
                     <div class="card-body">
                         <div class="collapse" id="history">
-                            <div class="card card-body">
-                                <ul id="historylist">
-                                    <li>History Item</li>
-                                </ul>
-                            </div>
+                            <ol class="list-group list-group-numbered" id="history-list">
+                                <!--History List-->
+                            </ol>
                         </div>
                     </div>
                 </div>
@@ -150,7 +150,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="card">
+                <!-- <div class="card">
                     <div class="card-header">
                         <h3>Debug Info</h3>
                     </div>
@@ -158,11 +158,12 @@
                         <p id="mousepos"></p>
                         <p id="selected"></p>
                     </div>
-                </div>
+                </div> -->
 
             </div>
         </div>
     </div>
+    <script src="assets/ai.js"></script>
     <script src="includes/jquery-3.5.1.slim.min.js"></script>
     <script src="assets/game.js"></script>
     <script src="assets/ui.js"></script>

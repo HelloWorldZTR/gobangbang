@@ -11,6 +11,7 @@ class Game {
         this.whoseTurn = BLACK;
         this.history  = new Array();
         this.waiting = false;
+        this.historyCount = 0;
     }
     getBoard() {
         return this.board.cells;
@@ -25,28 +26,47 @@ class Game {
     getWhoseTurn() {
         return this.whoseTurn;
     }
+    newHistory(move) {
+        this.history.push(move);
+        $('#history-list').append(`
+           <li class="list-group-item d-flex justify-content-between align-items-start" id="move-${move.id}">
+                <div class="ms-2 me-auto">
+                    <span class="fw-bold">${move.playerColor === BLACK ? 'Black' : 'White'}:</span>
+                    Placed at (${move.position[0]}, ${move.position[1]})
+                </div>
+                <span class="badge bg-primary rounded-pill">97%</span>
+            </li> 
+        `);
+    }
+    regret(){
+        if(this.config.allowRegret && this.history.length > 0) {
+            let move = this.history.pop();
+            let lastMove = this.history[this.history.length - 1];
+            this.board.cells[move.position[0]][move.position[1]] = EMPTY;
+            $(`#move-${move.id}`).remove();
+            this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
+            if(this.config.enableAI && this.whoseTurn!==this.config.playerColor) {
+                this.waiting = true;
+                this.aiMove(this.board.cells, lastMove);
+            }
+            return null;
+        }
+        else {
+            return 'Regret is not allowed';
+        }
+    }
     setCell(i, j) {
         if(this.waiting) {
             return 'AI is making a move';
         }
         let err = this.board.setCell(i, j, this.getWhoseTurn());
         if(err==null){
-            let move = new Move(this.getWhoseTurn(), [i, j]);
+            let move = new Move(this.getWhoseTurn(), [i, j], this.historyCount++);
             this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
-            this.history.push(move);
-            if(this.config.enableAI) {
-                // Start waiting to prevent the player from making another move
+            this.newHistory(move);
+            if(this.config.enableAI){
                 this.waiting = true;
-                $('#board')[0].style.cursor = 'wait';
-                // Call the AI to make a move
-                let ai_move_json = nextMove(JSON.stringify(this.getBoard()));
-                let ai_move = JSON.parse(ai_move_json);
-                //move = new Move(this.getWhoseTurn(), [ai_move.x, ai_move.y]);
-                //this.board.setCell(ai_move.x, ai_move.y, this.getWhoseTurn());
-                //this.history.push(move);
-                // Stop waiting
-                this.waiting = false;
-                $('#board').style.cursor = 'default';
+                this.aiMove();
             }
             return null;
         }
@@ -54,12 +74,16 @@ class Game {
             return err;
         }
     }
-
+    aiMove(cells, lastMove) {
+        setTimeout(() => {}, 1000);
+        this.waiting = false;
+    }
 }
 class Move {
-    constructor(playerColor, position) {
+    constructor(playerColor, position, id) {
         this.playerColor = playerColor;
         this.position = position;
+        this.id = id;
     }
 }
 
@@ -311,7 +335,7 @@ class Config {
             }
         }
         // Save the configuration to local storage
-        localStorage.setItem('config', config);
+        localStorage.setItem('config', JSON.stringify(config));
         // Enable the configuration
         this.enableConfig();
     }
@@ -323,6 +347,7 @@ class Config {
         let config = localStorage.getItem('config');
         if(config) {
             try {
+                config = JSON.parse(config);
                 this.updateConfig(config)
             } catch (error) {
                 console.error(error);
@@ -349,6 +374,7 @@ class Config {
         console.log('Config enabled');
         console.log(this.toString());
         //TODO::Sync with UI
+        $('#regret').prop('disabled', !this.allowRegret);
     }
     toString() {
         let config = {
