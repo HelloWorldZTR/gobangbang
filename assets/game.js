@@ -693,15 +693,103 @@ class Board {
     }
     _deadFour(x, y, playerColor) {
         let otherColor = (playerColor === BLACK ? WHITE : BLACK);
-        this.cells[x][y] = playerColor;
-        ////////////////////////////
-        //TODO:: Implement a better way to check dead four
-        ////////////////////////////
-        this.cells[x][y] = EMPTY;
+        let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
+        //horizontal
+        let count = 1;
+        let countDead = 0;
+        let tx = x, ty = y;
+        while (tx > 0 && this.cells[tx - 1][ty] === playerColor) {
+            tx--;
+            count++;
+        }
+        if(tx==0 || this.cells[tx-1][ty]===otherColor) {
+            countDead++;
+        }
+        tx = x;
+        while (tx < 14 && this.cells[tx + 1][ty] === playerColor) {
+            tx++;
+            count++;
+        }
+        if(tx==14 || this.cells[tx+1][ty]===otherColor) {
+            countDead++;
+        }
+        if(count==4 && countDead==1) {
+            return true;
+        }
+        //vertical
+        count = 1;
+        countDead = 0;
+        tx = x, ty = y;
+        while (ty > 0 && this.cells[tx][ty - 1] === playerColor) {
+            ty--;
+            count++;
+        }
+        if(ty==0 || this.cells[tx][ty-1]===otherColor) {
+            countDead++;
+        }
+        ty = y;
+        while (ty < 14 && this.cells[tx][ty + 1] === playerColor) {
+            ty++;
+            count++;
+        }
+        if(ty==14 || this.cells[tx][ty+1]===otherColor) {
+            countDead++;
+        }
+        if(count==4 && countDead==1) {
+            return true;
+        }
+        //diagonal
+        count = 1;
+        countDead = 0;
+        tx = x, ty = y;
+        while (tx > 0 && ty > 0 && this.cells[tx - 1][ty - 1] === playerColor) {
+            tx--;
+            ty--;
+            count++;
+        }
+        if(tx==0 || ty==0 || this.cells[tx-1][ty-1]===otherColor) {
+            countDead++;
+        }
+        tx = x;
+        ty = y;
+        while (tx < 14 && ty < 14 && this.cells[tx + 1][ty + 1] === playerColor) {
+            tx++;
+            ty++;
+            count++;
+        }
+        if(tx==14 || ty==14 || this.cells[tx+1][ty+1]===otherColor) {
+            countDead++;
+        }
+        if(count==4 && countDead==1) {
+            return true;
+        }
+        count = 1;
+        countDead = 0;
+        tx = x, ty = y;
+        while (tx > 0 && ty < 14 && this.cells[tx - 1][ty + 1] === playerColor) {
+            tx--;
+            ty++;
+            count++;
+        }
+        if(tx==0 || ty==14 || this.cells[tx-1][ty+1]===otherColor) {
+            countDead++;
+        }
+        tx = x;
+        ty = y;
+        while (tx < 14 && ty > 0 && this.cells[tx + 1][ty - 1] === playerColor) {
+            tx++;
+            ty--;
+            count++;
+        }
+        if(tx==14 || ty==0 || this.cells[tx+1][ty-1]===otherColor) {
+            countDead++;
+        }
+        if(count==4 && countDead==1) {
+            return true;
+        }
         return false;
     }
     getAllValidMoves(playerColor) {
-        //TODO:: Implement a better way to get all valid moves
         let moves = [];
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
@@ -960,16 +1048,6 @@ class Board {
             }
         }
         return null;
-    }
-    _dbg(){
-        console.log('Debugging');
-        for(let i = 0; i<15; i++) {
-            for(let j = 0; j<15; j++) {
-                if(this._fiveInRow(i, j, BLACK)) {
-                    console.log(i, j);
-                }
-            }
-        }
     }
 }
 
