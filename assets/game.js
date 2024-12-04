@@ -2,6 +2,10 @@
 const BLACK = 1;
 const WHITE = 2;
 const EMPTY = 0;
+
+const MAX_MOVES = 10;
+const MAX_DEPTH = 1;
+
 /**
  * @class Game
  * @classdesc Represents the game. Contains the game state and rules.
@@ -211,28 +215,28 @@ class Game {
         let aiColor = this.config.playerColor === BLACK ? WHITE : BLACK;
         let humanColor = this.config.playerColor;
         let bestMove = null;
-        let bestScore = (aiColor === BLACK ? -Infinity : Infinity);
-        let depth = 3;
+        let bestScore = Infinity;
         let moves = this.board.getAllValidMoves(aiColor);
-        for (let i = 0; i < moves.length; i++) {
+        console.log(moves.slice(0, MAX_MOVES)); 
+        //If the AI is white we want to minimize the score
+        for (let i = 0; i < Math.min(MAX_MOVES, moves.length); i++) {
             let move = moves[i];
+            if(move[2]>=100000) {
+                //If the AI can win in one move, or lose in one move,
+                // just make the move
+                bestMove = move;
+                break;
+            }
             this.board.cells[move[0]][move[1]] = aiColor;
-            let score = this.minmax(depth, -Infinity, Infinity, humanColor);
+            let score = this.minmax(MAX_DEPTH, -Infinity, Infinity, humanColor);
             this.board.cells[move[0]][move[1]] = EMPTY;
-            if (aiColor === BLACK) {
-                //We want to maximize the score
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMove = move;
-                }
+            if(score<bestScore) {
+                bestScore = score;
+                bestMove = move;
             }
-            else {
-                //We want to minimize the score
-                if (score < bestScore) {
-                    bestScore = score;
-                    bestMove = move;
-                }
-            }
+        }
+        if(bestMove==null) {
+            bestMove = moves[0];
         }
         this.board.cells[bestMove[0]][bestMove[1]] = aiColor;
         let move = new Move(aiColor, bestMove, this.historyCount++);
@@ -246,8 +250,9 @@ class Game {
             return this.board.evaluate();
         }
         if (playerColor === BLACK) {
+            //We want to maximize the score
             let max = -Infinity;
-            for (let i = 0; i < moves.length; i++) {
+            for (let i = 0; i < Math.min(MAX_MOVES, moves.length); i++) {
                 let move = moves[i];
                 this.board.cells[move[0]][move[1]] = BLACK;
                 max = Math.max(max, this.minmax(depth - 1, alpha, beta, WHITE));
@@ -260,8 +265,9 @@ class Game {
             return max;
         }
         else {
+            //We want to minimize the score
             let min = Infinity;
-            for (let i = 0; i < moves.length; i++) {
+            for (let i = 0; i < Math.min(MAX_MOVES, moves.length); i++) {
                 let move = moves[i];
                 this.board.cells[move[0]][move[1]] = WHITE;
                 min = Math.min(min, this.minmax(depth - 1, alpha, beta, BLACK));
@@ -372,18 +378,111 @@ class Board {
      */
     evaluatePos(x, y, playerColor) {
         let totalScore = 0;
-        if (this._checkFive(x, y, playerColor)) {
+        let otherColor = (playerColor === BLACK ? WHITE : BLACK);
+        //If we want to make an immediate move, set the score to >=100000
+        if (this._fiveInRow(x, y, playerColor)) {
+            totalScore += 1000000;
+        }
+        if(this._liveFour(x, y, otherColor)) {
             totalScore += 100000;
         }
-        if (this._liveFour(x, y, playerColor)) {
+        if (this._fiveInRow(x, y, otherColor)) {
+            totalScore += 1000000;
+        }
+        if(this._liveThree(x, y, otherColor)) {
+            totalScore += 100000;
+        }
+        if(this._deadFour(x, y, otherColor)) {
             totalScore += 10000;
+        }
+        if (this._liveFour(x, y, playerColor)) {
+            totalScore += 100000;
         }
         if (this._liveThree(x, y, playerColor)) {
             totalScore += 1000;
         }
-        if (this._checkForbidden(x, y, playerColor)) {
-            totalScore -= 100000;
+        if(this._deadFour(x, y, playerColor)) {
+            totalScore += 1000;
         }
+        if(this._nearSomething(x, y)) {
+            totalScore += 100;
+        }
+        if(this._nearCenter(x, y)) {
+            totalScore += 10;
+        }
+        if (this._checkForbidden(x, y, playerColor)) {
+            totalScore -= 100000000;
+        }
+        return totalScore;
+    }
+    _fiveInRow(x, y, playerColor) {
+        let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
+        //horizontal
+        let count = 1;
+        let tx=x, ty=y;
+        while(tx>0 && this.cells[tx-1][ty]===playerColor) {
+            tx--;
+            count++;
+        }
+        tx = x;
+        while(tx<14 && this.cells[tx+1][ty]===playerColor) {
+            tx++;
+            count++;
+        }
+        if(count>=5) {
+            return true;
+        }
+        //vertical
+        count = 1;
+        tx=x, ty=y;
+        while(ty>0 && this.cells[tx][ty-1]===playerColor) {
+            ty--;
+            count++;
+        }
+        ty = y;
+        while(ty<14 && this.cells[tx][ty+1]===playerColor) {
+            ty++;
+            count++;
+        }
+        if(count>=5) {
+            return true;
+        }
+        //diagonal
+        count = 1;
+        tx=x, ty=y;
+        while(tx>0 && ty>0 && this.cells[tx-1][ty-1]===playerColor) {
+            tx--;
+            ty--;
+            count++;
+        }
+        tx = x;
+        ty = y;
+        while(tx<14 && ty<14 && this.cells[tx+1][ty+1]===playerColor) {
+            tx++;
+            ty++;
+            count++;
+        }
+        if(count>=5) {
+            return true;
+        }
+        count = 1;
+        tx=x, ty=y;
+        while(tx>0 && ty<14 && this.cells[tx-1][ty+1]===playerColor) {
+            tx--;
+            ty++;
+            count++;
+        }
+        tx = x;
+        ty = y;
+        while(tx<14 && ty>0 && this.cells[tx+1][ty-1]===playerColor) {
+            tx++;
+            ty--;
+            count++;
+        }
+        if(count>=5) {
+            return true;
+        }
+        return false;
     }
     /**
      * 
@@ -461,7 +560,29 @@ class Board {
         if (count < 3) {
             flagd = false;
         }
-        this.cells[x][y] = EMPTY;
+        tx = x, ty = y;
+        count = 1;
+        while (tx > 0 && ty < 14 && this.cells[tx - 1][ty + 1] === playerColor) {
+            tx--;
+            ty++;
+            count++;
+        }
+        if (tx === 0 || ty === 14 || this.cells[tx - 1][ty + 1] === otherColor) {
+            flagd = false;
+        }
+        tx = x;
+        ty = y;
+        while (tx < 14 && ty > 0 && this.cells[tx + 1][ty - 1] === playerColor) {
+            tx++;
+            ty--;
+            count++;
+        }
+        if (tx === 14 || ty === 0 || this.cells[tx + 1][ty - 1] === otherColor) {
+            flagd = false;
+        }
+        if (count < 3) {
+            flagd = false;
+        }
         return flagh || flagv || flagd;
     }
     _liveFour(x, y, playerColor) {
@@ -535,51 +656,68 @@ class Board {
         if (count < 4) {
             flagd = false;
         }
-        this.cells[x][y] = EMPTY;
+        tx = x, ty = y;
+        count = 1;
+        while (tx > 0 && ty < 14 && this.cells[tx - 1][ty + 1] === playerColor) {
+            tx--;
+            ty++;
+            count++;
+        }
+        if (tx === 0 || ty === 14 || this.cells[tx - 1][ty + 1] === otherColor) {
+            flagd = false;
+        }
+        tx = x;
+        ty = y;
+        while (tx < 14 && ty > 0 && this.cells[tx + 1][ty - 1] === playerColor) {
+            tx++;
+            ty--;
+            count++;
+        }
+        if (tx === 14 || ty === 0 || this.cells[tx + 1][ty - 1] === otherColor) {
+            flagd = false;
+        }
         return flagh || flagv || flagd;
     }
-    _deadFour(x, y, playerColor) {
-        let pattern = [
-            [otherColor, playerColor, playerColor, playerColor, playerColor, EMPTY],
-            [EMPTY, playerColor, playerColor, playerColor, playerColor, otherColor]
-        ];
-        let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
-        for (let i = 0; i < pattern.length; i++) {
-            for (let j = 0; j < directions.length; j++) {
-                let dx = directions[j][0];
-                let dy = directions[j][1];
-                let flag = true;
-                for (let k = 0; k < pattern[i].length; k++) {
-                    let nx = x + k * dx;
-                    let ny = y + k * dy;
-                    if (nx >= 0 && nx < 15 && ny >= 0 && ny < 15 && this.cells[nx][ny] === pattern[i][k]) {
-                        continue;
-                    } else {
-                        flag = false;
-                        break;
-                    }
-                }
-                if (flag) {
+    _nearSomething(x, y) {
+        let cnt = 0;
+        for(let i = x-1; i<=x+1; i++) {
+            for(let j = y-1; j<=y+1; j++) {
+                if(i>=0 && i<15 && j>=0 && j<15 && this.cells[i][j] !== EMPTY) {
                     return true;
                 }
             }
         }
+    }
+    _nearCenter(x, y) {
+        return (x>=6 && x<=8 && y>=6 && y<=8);
+    }
+    _deadFour(x, y, playerColor) {
+        let otherColor = (playerColor === BLACK ? WHITE : BLACK);
+        this.cells[x][y] = playerColor;
+        ////////////////////////////
+        //TODO:: Implement a better way to check dead four
+        ////////////////////////////
+        this.cells[x][y] = EMPTY;
         return false;
     }
     getAllValidMoves(playerColor) {
+        //TODO:: Implement a better way to get all valid moves
         let moves = [];
         for (let i = 0; i < 15; i++) {
             for (let j = 0; j < 15; j++) {
                 if (this.cells[i][j] === EMPTY) {
-                    if (this._checkForbidden(i, j, playerColor)) {
-                        continue;
-                    }
-                    else {
-                        moves.push([i, j]);
-                    }
+                    // if (this._checkForbidden(i, j, playerColor)) {
+                    //     continue;
+                    // }
+                   // else {
+                        moves.push([i, j, this.evaluatePos(i, j, playerColor)]);
+                    //}
                 }
             }
         }
+        moves.sort((a, b)=>{
+            return b[2]-a[2];
+        })
         return moves;
     }
     _checkForbidden(x, y, playerColor) {
@@ -823,6 +961,16 @@ class Board {
         }
         return null;
     }
+    _dbg(){
+        console.log('Debugging');
+        for(let i = 0; i<15; i++) {
+            for(let j = 0; j<15; j++) {
+                if(this._fiveInRow(i, j, BLACK)) {
+                    console.log(i, j);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -839,6 +987,7 @@ class Config {
      * @param {Array} config - The configuration to update
      * */
     updateConfig(config) {
+        console.log(config);
         for (let i = 0; i < config.length; i++) {
             let item = config[i];
             switch (item.name) {
@@ -868,9 +1017,9 @@ class Config {
                     this.debug = item.value === 'true';
                     break;
                 case 'enableAI':
-                    if (!(['true', 'false'].includes(item.value)))
+                    if (!(['on', 'off'].includes(item.value)))
                         throw new Error('Invalid value for enableAI');
-                    this.enableAI = item.value === 'true';
+                    this.enableAI = item.value === 'on';
                     break;
                 case 'colorScheme':
                     if (!(['auto', 'dark', 'light'].includes(item.value)))
@@ -933,7 +1082,7 @@ class Config {
             $('#playerColorWhite').prop('checked', true);
         }
         $('#debug').prop('checked', this.debug);
-        $('#enableAI').prop('checked', this.enableAI);
+        $('#enableAI').val(this.enableAI ? 'on' : 'off');
         $('#colorScheme').val(this.colorScheme);
     }
     /**

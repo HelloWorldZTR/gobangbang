@@ -122,6 +122,11 @@ board.addEventListener("mousemove", function __handler__(evt) {
     canvas.beginPath();
     canvas.arc(pointx, pointy, circleSize + 1, 0, 2 * Math.PI);
     canvas.fill();
+    //Draw a little tooltip
+    canvas.fillStyle = 'black';
+    canvas.font = '12px Arial';
+    canvas.fillText(`(${selectedPoint[0]},${selectedPoint[1]})`, pointx + 10, pointy - 10);
+    
     //Set the cursor to pointer
     if(!game.waiting)
       board.style.cursor = 'pointer';
