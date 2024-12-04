@@ -12,6 +12,13 @@ class Game {
         this.history  = new Array();
         this.waiting = false;
         this.historyCount = 0;
+        if(this.config.enableAI && this.config.playerColor === WHITE) {
+            this.waiting = true;
+            this.aiMove();
+        }
+    }
+    sendGameOverMsg(msg){
+        window.postMessage(msg, "*");
     }
     getBoard() {
         return this.board.cells;
@@ -38,18 +45,80 @@ class Game {
             </li> 
         `);
     }
+    checkWin() {
+        let winner = this.board.checkWin();
+        if(winner){
+            if(this.config.enableAI) {
+                if(winner === this.config.playerColor) {
+                    this.sendGameOverMsg('You win!');
+                }
+                else {
+                    this.sendGameOverMsg('You lose!');
+                }
+            }
+            else {
+                this.sendGameOverMsg(winner === BLACK ? 'Black wins!' : 'White wins!');
+            }
+        }
+    }
+    saveGame() {
+        let data = {
+            board: this.board.cells,
+            history: this.history,
+            whoseTurn: this.whoseTurn,
+            elapsedTime: this.elapasedTime
+        };
+        return JSON.stringify(data);
+    }
+    loadGame(data) {
+        try{
+            let game = JSON.parse(data);
+            this.board.cells = game.board;
+            this.history = game.history;
+            this.whoseTurn = game.whoseTurn;
+            this.elapasedTime = game.elapsedTime;
+        }
+        catch(err){
+            return err;
+        }
+    }
+    newGame() {
+        this.board = new Board();
+        this.elapasedTime = 0;
+        this.whoseTurn = BLACK;
+        this.history  = new Array();
+        this.waiting = false;
+        this.historyCount = 0;
+        $('#history-list').empty();
+        if(this.config.enableAI && this.config.playerColor === WHITE) {
+            this.waiting = true;
+            this.aiMove();
+        }
+    }
     regret(){
         if(this.config.allowRegret && this.history.length > 0) {
-            let move = this.history.pop();
-            let lastMove = this.history[this.history.length - 1];
-            this.board.cells[move.position[0]][move.position[1]] = EMPTY;
-            $(`#move-${move.id}`).remove();
-            this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
-            if(this.config.enableAI && this.whoseTurn!==this.config.playerColor) {
-                this.waiting = true;
-                this.aiMove(this.board.cells, lastMove);
+            // If the player is white, regret two moves
+            // Because the player is white, the last move is made by the AI
+            if(this.config.playerColor===WHITE) {
+                let move = this.history.pop();
+                this.board.cells[move.position[0]][move.position[1]] = EMPTY;
+                $(`#move-${move.id}`).remove();
+                move = this.history.pop();
+                this.board.cells[move.position[0]][move.position[1]] = EMPTY;
+                $(`#move-${move.id}`).remove();
             }
-            return null;
+            // If the player is black, regret one move
+            else {
+                let move = this.history.pop();
+                let lastMove = this.history[this.history.length - 1];
+                this.board.cells[move.position[0]][move.position[1]] = EMPTY;
+                $(`#move-${move.id}`).remove();
+                this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
+                return null;
+            }
+        }
+        else if(this.history.length === 0) {
+            return 'No moves to regret';
         }
         else {
             return 'Regret is not allowed';
@@ -64,9 +133,11 @@ class Game {
             let move = new Move(this.getWhoseTurn(), [i, j], this.historyCount++);
             this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
             this.newHistory(move);
+            this.checkWin();
             if(this.config.enableAI){
                 this.waiting = true;
                 this.aiMove();
+                this.checkWin();
             }
             return null;
         }
@@ -75,8 +146,17 @@ class Game {
         }
     }
     aiMove(cells, lastMove) {
-        setTimeout(() => {}, 1000);
+        let x = Math.floor(Math.random() * 15);
+        let y = Math.floor(Math.random() * 15);
+        while(!(this.board.cells[x][y] === EMPTY)){
+            x = Math.floor(Math.random() * 15);
+            y = Math.floor(Math.random() * 15);
+        }
+        this.board.setCell(x, y, this.getWhoseTurn());
         this.waiting = false;
+        let move = new Move(this.getWhoseTurn(), [x, y], this.historyCount++);
+        this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
+        this.newHistory(move);
     }
 }
 class Move {
@@ -139,10 +219,7 @@ class Board {
     }
     _threeThree(){
         let pattern = [
-            [0, 1, 0, 1, 1, 0],
-            [0, 1, 1, 0, 1, 0],
-            [0, 1, 1, 1, 0, 0],
-            [0, 0, 1, 1, 1, 0]
+            [0, 1, 1, 1, 0,]
         ];
         let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
         let count = 0;
@@ -177,9 +254,6 @@ class Board {
     }
     _fourFour(){
         let pattern = [
-            [1,1,1,0,1],
-            [1,1,0,1,1],
-            [1,0,1,1,1],
             [0,1,1,1,1],
             [1,1,1,1,0]
         ];
@@ -315,7 +389,8 @@ class Config {
                     break;
                 case 'playerColor':
                     if(!(['black', 'white'].includes(item.value)))
-                    this.playerColor = item.value === 'black' ? BLACK : WHITE;
+                        throw new Error('Invalid value for playerColor');
+                    this.playerColor = (item.value === 'black' ? BLACK : WHITE);
                     break;
                 case 'debug':
                     if(!(['true', 'false'].includes(item.value)))
@@ -373,8 +448,18 @@ class Config {
     enableConfig() {
         console.log('Config enabled');
         console.log(this.toString());
-        //TODO::Sync with UI
         $('#regret').prop('disabled', !this.allowRegret);
+        $('#sound').prop('checked', this.sound);
+        $('#soundVolume').val(this.soundVolume);
+        if(this.playerColor === BLACK) {
+            $('#playerColorBlack').prop('checked', true);
+        }
+        else {
+            $('#playerColorWhite').prop('checked', true);
+        }
+        $('#debug').prop('checked', this.debug);
+        $('#enableAI').prop('checked', this.enableAI);
+        $('#colorScheme').val(this.colorScheme);
     }
     toString() {
         let config = {

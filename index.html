@@ -22,13 +22,13 @@
                     <a class="nav-link" href="#" data-toggle="modal" data-target="#settings">Settings</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Load</a>
+                    <a id="loadBtn" class="nav-link" href="#">Load</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Save</a>
+                    <a id="saveBtn" class="nav-link" href="#">Save</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">New Game</a>
+                    <a id="newGameBtn" class="nav-link" href="#">New Game</a>
                 </li>
             </ul>
         </div>
@@ -50,29 +50,29 @@
                     <form id="config-form">
                         <div class="form-group">
                             <label for="playerColor">Your Color</label>
-                            <input class="player-color" type="radio" name="playerColor" value="black" checked>Black
-                            <input class="player-color" type="radio" name="playerColor" value="white">White
+                            <input id="playerColorBlack" class="player-color" type="radio" name="playerColor" value="black" checked>Black
+                            <input id="playerColorWhite" class="player-color" type="radio" name="playerColor" value="white">White
                             <span id="save-warn" class="warn" style="display:none;">You have changed your side. Saving
                                 changes will cause the game to restart.</span>
                         </div>
                         <div class="form-group">
                             <label for="enableAI">Enable AI</label>
-                            <input type="checkbox" name="enableAI" value="true" checked>
+                            <input id="enableAI" type="checkbox" name="enableAI" value="true" checked>
                         </div>
                         <div class="form-group">
                             <lable for="allowRegret">Allow Regret</lable>
-                            <input type="checkbox" name="allowRegret" value="true" checked>
+                            <input id="allowRegret" type="checkbox" name="allowRegret" value="true" checked>
                         </div>
                         <div class="form-group">
                             <label for="language">Language</label>
-                            <select name="language">
+                            <select id="language" name="language">
                                 <option value="en">English</option>
                                 <option value="zh">Chinese</option>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="colorScheme">Color Scheme</label>
-                            <select name="colorScheme">
+                            <select id="colorScheme name="colorScheme">
                                 <option value="light">Light</option>
                                 <option value="dark">Dark</option>
                                 <option value="auto">System Setting</option>
@@ -80,19 +80,36 @@
                         </div>
                         <div class="form-group">
                             <label for="sound">BGM</label>
-                            <input type="checkbox" name="sound" value="true" checked>
+                            <input id="sound" type="checkbox" name="sound" value="true" checked>
                             <label for="soundVolume">Volume</label>
-                            <input type="range" name="soundVolume" min="0" max="100" value="50">
+                            <input id="soundVolume" type="range" name="soundVolume" min="0" max="100" value="50">
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="update">Save changes</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="update">Save changes</button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- Game Over Modal -->
+    <div class="modal fade" id="game-over" tabindex="-1" role="dialog" aria-labelledby="game-over" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="game-over-title">Game Over</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="game-over-message">You win or You lose?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="restart">New Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="row">
             <!--Game Board Column-->
@@ -136,17 +153,16 @@
                         </div>
                     </div>
                 </div>
-                <!--Options-->
+                <!--Debug-->
                 <div class="card">
                     <div class="card-header">
-                        <h3>Options</h3>
+                        <h3>Debug</h3>
                     </div>
                     <div class="card-body">
                         <!--button group-->
                         <div class="btn-group">
-                            <button class="btn btn-primary" id="easy">Easy</button>
-                            <button class="btn btn-primary" id="medium">Medium</button>
-                            <button class="btn btn-primary" id="hard">Hard</button>
+                            <button class="btn btn-primary" id="dbg">ShowWin</button>
+                    \
                         </div>
                     </div>
                 </div>

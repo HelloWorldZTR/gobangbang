@@ -148,13 +148,24 @@ board.addEventListener("mouseout", function __handler__(evt) {
 updateBtn.click(function () {
   //Read Configurations
   let config = $('#config-form').serializeArray();
+  //Start a new game if the player color is changed
+  for(let i=0;i<config.length;i++) {
+    if(config[i].name==='playerColor') {
+      let color = config[i].value==='black'?BLACK:WHITE;
+      if(color!==game.config.playerColor) {
+        console.log('New Game because of color change');
+        game.newGame();
+        drawBoard();
+      }
+    }
+  }
   //Update the game configuration
   game.config.updateConfig(config);
 });
 $('.player-color').toArray().forEach((cur)=>{
   cur.addEventListener("click", 
   function __handler__(evt) {
-    let color = evt.target.id;
+    let color = evt.target.value==='black'?BLACK:WHITE;
     if(color!==game.config.playerColor) {
       $('#save-warn').css('display', 'block');
     }
@@ -169,6 +180,50 @@ $('#regret').click(function () {
     displayError(err);
   }
   drawBoard();
+});
+$('#saveBtn').click(() => {
+  let data = game.saveGame();
+  // Save to a file for download
+  let blob = new Blob([data], { type: 'application/json' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = `gamesave-${new Date().toISOString()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+});
+$('#loadBtn').click(() => {
+  // Upload a file
+  let input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = function () {
+    let file = input.files[0];
+    let reader = new FileReader();
+    reader.onload = function () {
+      let data = reader.result;
+      let err = game.loadGame(data);
+      if (err) {
+        displayError(err);
+      }
+      drawBoard();
+    }
+    reader.readAsText(file);
+  }
+  input.click();
+});
+$('#newGameBtn').click(() => {
+  game.newGame();
+  drawBoard();
+});
+$('#game-over').on('hidden.bs.modal', function () {
+  game.newGame();
+  drawBoard();
+});
+window.addEventListener('message', function (evt) {
+  let data = evt.data;
+  $('#game-over-message').text(data);
+  $('#game-over').modal('show');
 });
 board.addEventListener("click", function __handler__(evt) {
   // Get the mouse position
@@ -244,3 +299,8 @@ function drawBoard() {
     }
   }
 }
+
+
+$('#dbg').click(()=>{
+  game.sendGameOverMsg('You win!');
+});
