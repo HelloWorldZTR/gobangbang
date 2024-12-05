@@ -23,8 +23,11 @@ class Game {
         this.waiting = false;
         this.historyCount = 0;
         if (this.config.enableAI && this.config.playerColor === WHITE) {
-            this.waiting = true;
-            this.aiMove();
+            //If AI is the first to make a move, place a piece at the center
+            this.board.cells[7][7] = BLACK;
+            let move = new Move(BLACK, [7, 7], this.historyCount++);
+            this.newHistory(move);
+            this.whoseTurn = WHITE;
         }
     }
     /**
@@ -146,8 +149,10 @@ class Game {
         this.historyCount = 0;
         $('#history-list').empty();
         if (this.config.enableAI && this.config.playerColor === WHITE) {
-            this.waiting = true;
-            this.aiMove();
+            this.board.cells[7][7] = BLACK;
+            let move = new Move(BLACK, [7, 7], this.historyCount++);
+            this.newHistory(move);
+            this.whoseTurn = WHITE;
         }
     }
     /**
@@ -1062,18 +1067,18 @@ class Config {
      * */
     updateConfig(config) {
         console.log(config);
+        this.allowRegret = false;
+        this.sound = false;
+        this.enableAI = false;
+        this.debug = false;
         for (let i = 0; i < config.length; i++) {
             let item = config[i];
             switch (item.name) {
                 case 'allowRegret':
-                    if (!(['true', 'false'].includes(item.value)))
-                        throw new Error('Invalid value for allowRegret');
-                    this.allowRegret = item.value === 'true';
+                    this.allowRegret = true;
                     break;
                 case 'sound':
-                    if (!(['true', 'false'].includes(item.value)))
-                        throw new Error('Invalid value for sound');
-                    this.sound = item.value === 'true';
+                    this.sound = true;
                     break;
                 case 'soundVolume':
                     if (isNaN(parseFloat(item.value)))
@@ -1086,14 +1091,10 @@ class Config {
                     this.playerColor = (item.value === 'black' ? BLACK : WHITE);
                     break;
                 case 'debug':
-                    if (!(['true', 'false'].includes(item.value)))
-                        throw new Error('Invalid value for debug');
-                    this.debug = item.value === 'true';
+                    this.debug = true;
                     break;
                 case 'enableAI':
-                    if (!(['on', 'off'].includes(item.value)))
-                        throw new Error('Invalid value for enableAI');
-                    this.enableAI = item.value === 'on';
+                    this.enableAI = true;
                     break;
                 case 'colorScheme':
                     if (!(['auto', 'dark', 'light'].includes(item.value)))
@@ -1146,18 +1147,29 @@ class Config {
     enableConfig() {
         console.log('Config enabled');
         console.log(this.toString());
-        $('#regret').prop('disabled', !this.allowRegret);
+        // Sync the configuration with the UI
+        $('#regret').prop('checked', this.allowRegret);
         $('#sound').prop('checked', this.sound);
         $('#soundVolume').val(this.soundVolume);
         if (this.playerColor === BLACK) {
             $('#playerColorBlack').prop('checked', true);
+            $('#playerColorWhite').prop('checked', false);
         }
         else {
             $('#playerColorWhite').prop('checked', true);
+            $('#playerColorBlack').prop('checked', false);
         }
         $('#debug').prop('checked', this.debug);
         $('#enableAI').prop('checked', this.enableAI);
         $('#colorScheme').val(this.colorScheme);
+        //Actuate the configuration
+        $('#bgm').prop('volume', this.soundVolume/100);
+        if (this.sound) {
+            $('#bgm').get(0).play();
+        }
+        else {
+            $('#bgm').get(0).pause();
+        }
     }
     /**
      * Debugging method

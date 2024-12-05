@@ -57,11 +57,15 @@
                         </div>
                         <div class="form-group">
                             <label for="enableAI">Enable AI</label>
-                            <input id="enableAI" type="checkbox" name="enableAI">
+                            <input id="enableAI" type="checkbox" name="enableAI" value="true" checked>
                         </div>
                         <div class="form-group">
                             <lable for="allowRegret">Allow Regret</lable>
                             <input id="allowRegret" type="checkbox" name="allowRegret" value="true" checked>
+                        </div>
+                        <div class="form-group">
+                            <label for="debug">Debug Mode</label>
+                            <input id="debug" type="checkbox" name="debug" value="true">
                         </div>
                         <div class="form-group">
                             <label for="language">Language</label>
@@ -72,7 +76,7 @@
                         </div>
                         <div class="form-group">
                             <label for="colorScheme">Color Scheme</label>
-                            <select id="colorScheme name="colorScheme">
+                            <select id="colorScheme" name="colorScheme">
                                 <option value="light">Light</option>
                                 <option value="dark">Dark</option>
                                 <option value="auto">System Setting</option>
@@ -178,6 +182,12 @@
             </div>
         </div>
     </div>
+    <audio preload="metadata" id="bgm" loop style="display: none;">
+        <source src="assets/bgm.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="click" style="display: none;">
+        <source src="assets/click.mp3" type="audio/mpeg">
+    </audio>
     <!--Scripts-->
     <script src="includes/jquery-3.5.1.slim.min.js"></script>
     <script src="assets/game.js"></script>
@@ -187,5 +197,7 @@
     <script src="includes/jquery.i18n.properties.js"></script>
     <!--End Scripts-->
 </body>
-
+<footer>
+    
+</footer>
 </html>

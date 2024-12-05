@@ -28,6 +28,7 @@ bg.src = 'assets/bg.jpg';
 bg.onload = function () {
   drawBoard();
 }
+
 // Helper functions
 function getClientHeight() {
   return window.innerHeight - $('header').height();
@@ -154,18 +155,23 @@ updateBtn.click(function () {
   //Read Configurations
   let config = $('#config-form').serializeArray();
   //Start a new game if the player color is changed
+  let newGame = false;
   for(let i=0;i<config.length;i++) {
     if(config[i].name==='playerColor') {
       let color = config[i].value==='black'?BLACK:WHITE;
       if(color!==game.config.playerColor) {
         console.log('New Game because of color change');
-        game.newGame();
-        drawBoard();
+        newGame = true;
       }
     }
   }
   //Update the game configuration
   game.config.updateConfig(config);
+  //Start a new game
+  if(newGame) {
+    game.newGame();
+    drawBoard();
+  }
 });
 $('.player-color').toArray().forEach((cur)=>{
   cur.addEventListener("click", 
@@ -303,9 +309,5 @@ function drawBoard() {
       }
     }
   }
+
 }
-
-
-$('#dbg').click(()=>{
-  game.sendGameOverMsg('You win!');
-});
