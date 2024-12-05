@@ -141,7 +141,7 @@ class Game {
      * Start a new game
      */
     newGame() {
-        this.board = new Board();
+        this.board.cells = new Array(15).fill(null).map(() => new Array(15).fill(EMPTY));
         this.elapasedTime = 0;
         this.whoseTurn = BLACK;
         this.history = new Array();
@@ -385,7 +385,7 @@ class Board {
             totalScore += 1000000;
         }
         if(this._liveFour(x, y, otherColor)) {
-            totalScore += 100000;
+            totalScore += 200000;
         }
         if (this._fiveInRow(x, y, otherColor)) {
             totalScore += 1000000;
@@ -397,7 +397,7 @@ class Board {
             totalScore += 10000;
         }
         if (this._liveFour(x, y, playerColor)) {
-            totalScore += 100000;
+            totalScore += 200000;
         }
         if (this._liveThree(x, y, playerColor)) {
             totalScore += 1000;
@@ -1050,6 +1050,15 @@ class Board {
         }
         return null;
     }
+    _dbg(){
+        for(let i=0; i<15; i++) {
+            for(let j=0; j<15; j++) {
+                if(this._liveFour(i, j, BLACK)) {
+                    console.log('Live Four at', i, j);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -1164,11 +1173,29 @@ class Config {
         $('#colorScheme').val(this.colorScheme);
         //Actuate the configuration
         $('#bgm').prop('volume', this.soundVolume/100);
-        if (this.sound) {
-            $('#bgm').get(0).play();
+        try{
+            if (this.sound) {
+                $('#bgm').get(0).play();
+            }
+            else {
+                $('#bgm').get(0).pause();
+            }
+        }catch(e) {
+            //That's fine
+        }
+        if(this.enableAI) {
+            if(this.playerColor === BLACK) {
+                $('#player1').text('You');
+                $('#player2').text('AI');
+            }
+            else {
+                $('#player1').text('AI');
+                $('#player2').text('You');
+            }
         }
         else {
-            $('#bgm').get(0).pause();
+            $('#player1').text('Player 1');
+            $('#player2').text('Player 2');
         }
     }
     /**
