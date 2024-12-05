@@ -156,9 +156,9 @@ class Game {
      */
     regret() {
         if (this.config.allowRegret && this.history.length > 0) {
-            // If the player is white, regret two moves
-            // Because the player is white, the last move is made by the AI
-            if (this.config.playerColor === WHITE) {
+            if(this.config.enableAI) {
+                //If AI is enabled, we need to regret two moves
+                //Because the last move is made by the AI
                 let move = this.history.pop();
                 this.board.cells[move.position[0]][move.position[1]] = EMPTY;
                 $(`#move-${move.id}`).remove();
@@ -166,14 +166,10 @@ class Game {
                 this.board.cells[move.position[0]][move.position[1]] = EMPTY;
                 $(`#move-${move.id}`).remove();
             }
-            // If the player is black, regret one move
             else {
                 let move = this.history.pop();
-                let lastMove = this.history[this.history.length - 1];
                 this.board.cells[move.position[0]][move.position[1]] = EMPTY;
                 $(`#move-${move.id}`).remove();
-                this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
-                return null;
             }
         }
         else if (this.history.length === 0) {
@@ -1160,7 +1156,7 @@ class Config {
             $('#playerColorWhite').prop('checked', true);
         }
         $('#debug').prop('checked', this.debug);
-        $('#enableAI').val(this.enableAI ? 'on' : 'off');
+        $('#enableAI').prop('checked', this.enableAI);
         $('#colorScheme').val(this.colorScheme);
     }
     /**
