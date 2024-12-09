@@ -381,26 +381,26 @@ class Board {
         let totalScore = 0;
         let otherColor = (playerColor === BLACK ? WHITE : BLACK);
         //If we want to make an immediate move, set the score to >=100000
-        if (this._fiveInRow(x, y, playerColor)) {
+        if (this._fiveInRow(x, y, playerColor)) {//1st priority
             totalScore += 1000000;
-        }
-        if(this._liveFour(x, y, otherColor)) {
-            totalScore += 200000;
         }
         if (this._fiveInRow(x, y, otherColor)) {
             totalScore += 1000000;
         }
-        if(this._liveThree(x, y, otherColor)) {
+        if (this._liveFour(x, y, playerColor)) {//3rd priority
+            totalScore += 200000;
+        }
+        if(this._liveFour(x, y, otherColor)) {//2nd priority
             totalScore += 100000;
+        }
+        if(this._liveThree(x, y, otherColor)) {
+            totalScore += 10000;
         }
         if(this._deadFour(x, y, otherColor)) {
             totalScore += 10000;
         }
-        if (this._liveFour(x, y, playerColor)) {
-            totalScore += 200000;
-        }
         if (this._liveThree(x, y, playerColor)) {
-            totalScore += 1000;
+            totalScore += 10000;
         }
         if(this._deadFour(x, y, playerColor)) {
             totalScore += 1000;
@@ -537,7 +537,7 @@ class Board {
             flagv = false;
         }
         //diagonal
-        let flagd = true;
+        let flagd1 = true;
         count = 1;
         tx = x, ty = y;
         while (tx > 0 && ty > 0 && this.cells[tx - 1][ty - 1] === playerColor) {
@@ -546,7 +546,7 @@ class Board {
             count++;
         }
         if (tx === 0 || ty === 0 || this.cells[tx - 1][ty - 1] === otherColor) {
-            flagd = false;
+            flagd1 = false;
         }
         tx = x;
         ty = y;
@@ -556,20 +556,21 @@ class Board {
             count++;
         }
         if (tx === 14 || ty === 14 || this.cells[tx + 1][ty + 1] === otherColor) {
-            flagd = false;
+            flagd1 = false;
         }
         if (count < 3) {
-            flagd = false;
+            flagd1 = false;
         }
         tx = x, ty = y;
         count = 1;
+        let flagd2 = true;
         while (tx > 0 && ty < 14 && this.cells[tx - 1][ty + 1] === playerColor) {
             tx--;
             ty++;
             count++;
         }
         if (tx === 0 || ty === 14 || this.cells[tx - 1][ty + 1] === otherColor) {
-            flagd = false;
+            flagd2 = false;
         }
         tx = x;
         ty = y;
@@ -579,12 +580,12 @@ class Board {
             count++;
         }
         if (tx === 14 || ty === 0 || this.cells[tx + 1][ty - 1] === otherColor) {
-            flagd = false;
+            flagd2 = false;
         }
         if (count < 3) {
-            flagd = false;
+            flagd2 = false;
         }
-        return flagh || flagv || flagd;
+        return flagh || flagv || flagd1 || flagd2;
     }
     _liveFour(x, y, playerColor) {
         let otherColor = (playerColor === BLACK ? WHITE : BLACK);
@@ -633,7 +634,7 @@ class Board {
             flagv = false;
         }
         //diagonal
-        let flagd = true;
+        let flagd1 = true;
         count = 1;
         tx = x, ty = y;
         while (tx > 0 && ty > 0 && this.cells[tx - 1][ty - 1] === playerColor) {
@@ -642,7 +643,7 @@ class Board {
             count++;
         }
         if (tx === 0 || ty === 0 || this.cells[tx - 1][ty - 1] === otherColor) {
-            flagd = false;
+            flagd1 = false;
         }
         tx = x;
         ty = y;
@@ -652,11 +653,12 @@ class Board {
             count++;
         }
         if (tx === 14 || ty === 14 || this.cells[tx + 1][ty + 1] === otherColor) {
-            flagd = false;
+            flagd1 = false;
         }
         if (count < 4) {
-            flagd = false;
+            flagd1 = false;
         }
+        let flagd2 = true;
         tx = x, ty = y;
         count = 1;
         while (tx > 0 && ty < 14 && this.cells[tx - 1][ty + 1] === playerColor) {
@@ -665,7 +667,7 @@ class Board {
             count++;
         }
         if (tx === 0 || ty === 14 || this.cells[tx - 1][ty + 1] === otherColor) {
-            flagd = false;
+            flagd2 = false;
         }
         tx = x;
         ty = y;
@@ -675,9 +677,12 @@ class Board {
             count++;
         }
         if (tx === 14 || ty === 0 || this.cells[tx + 1][ty - 1] === otherColor) {
-            flagd = false;
+            flagd2 = false;
         }
-        return flagh || flagv || flagd;
+        if(count<4) {
+            flagd2 = false;
+        }
+        return flagh || flagv || flagd1 || flagd2;
     }
     _nearSomething(x, y) {
         let cnt = 0;
@@ -1054,7 +1059,10 @@ class Board {
         for(let i=0; i<15; i++) {
             for(let j=0; j<15; j++) {
                 if(this._liveFour(i, j, BLACK)) {
-                    console.log('Live Four at', i, j);
+                    console.log('Black Live Four at', i, j);
+                }
+                else if(this._liveFour(i, j, WHITE)) {
+                    console.log('White Live Four at', i, j);
                 }
             }
         }
