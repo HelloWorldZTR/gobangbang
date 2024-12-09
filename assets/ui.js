@@ -87,7 +87,40 @@ $(document).ready(function () {
   $('#board').attr('width', getBoardSize());
   $('#board').attr('height', getBoardSize());
   drawBoard();
+  //Initialize i18n
+  jQuery.i18n.properties({
+    name: 'strings', 
+    path: '../bundles/', 
+    mode: 'both',
+    callback: function () {
+      $('body').find('*').toArray().forEach((cur) => {
+        if (cur.hasAttribute('data-i18n')) {
+          let key = cur.getAttribute('data-i18n');
+          cur.innerHTML = jQuery.i18n.prop(key);
+        }
+      });
+    }
+  });
 });
+$('#language').change(function () {
+  let lang = $('#language').val();
+  console.log(lang);
+  jQuery.i18n.properties({
+    name: 'strings', 
+    path: '../bundles/', 
+    mode: 'both', 
+    language: lang, 
+    callback: function () {
+      $('body').find('*').toArray().forEach((cur) => {
+        if (cur.hasAttribute('data-i18n')) {
+          let key = cur.getAttribute('data-i18n');
+          cur.innerHTML = jQuery.i18n.prop(key);
+        }
+      });
+    }
+  });
+});
+
 setInterval(() => {
   timer.text(formatTime(game.getElapsedTime()));
 }, 1000);

@@ -56,9 +56,9 @@
     $.i18n.properties = function (settings) {
 
         var defaults = {
-            name: 'Messages',
+            name: 'strings',
             language: '',
-            path: '',
+            path: 'bundles',
             namespace: null,
             mode: 'vars',
             cache: false,

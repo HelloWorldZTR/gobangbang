@@ -14,6 +14,8 @@ http.createServer( function (request, response) {
     if(pathname == '/'){
         pathname = '/index.html';
     }
+    // 去除参数
+    pathname = pathname.replace(/\?.*/,'');
 
    // 从文件系统中读取请求的文件内容
    fs.readFile(__dirname+pathname, function (err, data) {
