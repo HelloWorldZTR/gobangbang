@@ -91,7 +91,7 @@ $(document).ready(function () {
   jQuery.i18n.properties({
     name: 'strings', 
     path: '../bundles/', 
-    mode: 'both',
+    mode: 'map',
     callback: function () {
       $('body').find('*').toArray().forEach((cur) => {
         if (cur.hasAttribute('data-i18n')) {
@@ -108,7 +108,7 @@ $('#language').change(function () {
   jQuery.i18n.properties({
     name: 'strings', 
     path: '../bundles/', 
-    mode: 'both', 
+    mode: 'map', 
     language: lang, 
     callback: function () {
       $('body').find('*').toArray().forEach((cur) => {
@@ -157,9 +157,11 @@ board.addEventListener("mousemove", function __handler__(evt) {
     canvas.arc(pointx, pointy, circleSize + 1, 0, 2 * Math.PI);
     canvas.fill();
     //Draw a little tooltip
-    canvas.fillStyle = 'black';
-    canvas.font = '12px Arial';
-    canvas.fillText(`(${selectedPoint[0]},${selectedPoint[1]})`, pointx + 10, pointy - 10);
+    if(game.config.debug){
+      canvas.fillStyle = 'black';
+      canvas.font = '12px Arial';
+      canvas.fillText(`(${selectedPoint[0]},${selectedPoint[1]})`, pointx + 10, pointy - 10);
+    }
     
     //Set the cursor to pointer
     if(!game.waiting)
