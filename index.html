@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bootstrap Template</title>
-    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link href="includes/bootstrap.min.css" rel="stylesheet">
 </head>
 
@@ -44,9 +44,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="settings-title" data-i18n="settings">Settings</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body">
                     <form id="config-form">
@@ -62,7 +62,8 @@
                         </div>
                         <div class="form-group">
                             <label for="enableAI" data-i18n="settings.ai">Enable AI</label>
-                            <input class="form-switch" id="enableAI" type="checkbox" name="enableAI" value="true" checked>
+                            <input class="form-switch" id="enableAI" type="checkbox" name="enableAI" value="true"
+                                checked>
                         </div>
                         <div class="form-group">
                             <lable for="allowRegret" data-i18n="settings.allow-regret">Allow Regret</lable>
@@ -143,7 +144,7 @@
                     </div>
                     <div class="card-body">
                         <!--Timer-->
-                        <p>Time Elapsed: <span id="timer"> 00:00:00</span></p>
+                        <p><span data-i18n="times">Time Elapsed:</span> <span id="timer"> 00:00:00</span></p>
                         <!--Player-->
                         <p>⚫: <span id="player1"></span></p>
                         <p>⚪: <span id="player2"></span></p>
@@ -152,11 +153,14 @@
                 <!--Game History-->
                 <div class="card">
                     <div class="card-header">
-                        <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#history"
-                            aria-expanded="true" aria-controls="history" data-i18n="history">
-                            Show History
-                        </button>
-                        <button class="btn btn-primary" type="button" id="regret" data-i18n="regret">Regret</button>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary" type="button" data-toggle="collapse"
+                                data-target="#history" aria-expanded="true" aria-controls="history" data-i18n="history">
+                                Show History
+                            </button>
+                            <button class="btn btn-primary" type="button" id="regret" data-i18n="regret">Regret</button>
+                            <button class="btn btn-danger" type="button" id="hint" data-i18n="hint">Hint</button>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="collapse" id="history">
@@ -166,18 +170,54 @@
                         </div>
                     </div>
                 </div>
-                <!--Debug-->
-                <div class="card">
+                <!--Replay-->
+                <!-- <div class="card">
                     <div class="card-header">
-                        <h3 data-i18n="debug">Debug</h3>
+                        <h3 data-i18n="replay">Replay</h3>
                     </div>
                     <div class="card-body">
-                        <!--button group-->
                         <div class="btn-group">
-                            <button class="btn btn-primary" id="dbg">ShowWin</button>
+                            <button class="btn btn-primary" id="fastback">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-rewind" viewBox="0 0 16 16">
+                                    <path
+                                        d="M9.196 8 15 4.633v6.734zm-.792-.696a.802.802 0 0 0 0 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696z" />
+                                    <path
+                                        d="M1.196 8 7 4.633v6.734zm-.792-.696a.802.802 0 0 0 0 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696z" />
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary" id="stepback">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                                </svg></button>
+                            <button class="btn btn-primary" id="pause">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-play" viewBox="0 0 16 16">
+                                    <path
+                                        d="M10.804 8 5 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696z" />
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary" id="stepforward">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                                    <path
+                                        d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                                </svg>
+                            </button>
+                            <button class="btn btn-primary" id="fastforward">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-fast-forward" viewBox="0 0 16 16">
+                                    <path
+                                        d="M6.804 8 1 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C.713 12.69 0 12.345 0 11.692V4.308c0-.653.713-.998 1.233-.696z" />
+                                    <path
+                                        d="M14.804 8 9 4.633v6.734zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C8.713 12.69 8 12.345 8 11.692V4.308c0-.653.713-.998 1.233-.696z" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                </div>
+                </div> -->
                 <!-- <div class="card">
                     <div class="card-header">
                         <h3>Debug Info</h3>
@@ -200,8 +240,9 @@
     <!--Scripts-->
     <script src="includes/jquery.min.js"></script>
     <script src="includes/jquery.i18n.properties.js"></script>
-    <script src="assets/game.js"></script>
-    <script src="assets/ui.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/replay.js"></script>
     <script src="includes/popper.min.js"></script>
     <script src="includes/bootstrap.min.js"></script>
     <!--End Scripts-->

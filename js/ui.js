@@ -23,7 +23,7 @@ let cellSize = width / 14;
 let circleSize = cellSize * 0.4;
 let bg = new Image();
 let waiting = false;
-
+let hint = null;
 bg.src = 'assets/bg.jpg';
 bg.onload = function () {
   drawBoard();
@@ -208,6 +208,16 @@ updateBtn.click(function () {
     drawBoard();
   }
 });
+$('#hint').click(function(){
+  let bestMove = game.getBestMove();
+  hint = bestMove;
+  drawBoard();
+  //Remove the hint after 2 seconds
+  setTimeout(()=>{
+    hint = null;
+    drawBoard();
+  },2000);
+});
 $('.player-color').toArray().forEach((cur)=>{
   cur.addEventListener("click", 
   function __handler__(evt) {
@@ -238,6 +248,21 @@ $('#saveBtn').click(() => {
   a.click();
   URL.revokeObjectURL(url);
 });
+// Prevent the user from leaving the page without saving the game
+window.addEventListener('beforeunload', function (evt) {
+  let data = game.saveGame();
+  this.localStorage.setItem('gameSave', data);
+  evt.preventDefault();
+});
+// Load the game from local storage
+let data = this.localStorage.getItem('gameSave');
+if (data) {
+  let err = game.loadGame(data);
+  if (err) {
+    displayError(err);
+  }
+  drawBoard();
+}
 $('#loadBtn').click(() => {
   // Upload a file
   let input = document.createElement('input');
@@ -344,5 +369,14 @@ function drawBoard() {
       }
     }
   }
-
+  /*Draw hint position on the board */
+  if(hint!==null){
+    let pointx = offset_x + hint[0] * cellSize;
+    let pointy = offset_y + hint[1] * cellSize;
+    canvas.fillStyle = 'rgba(255,0,0,0.6)';
+    canvas.beginPath();
+    canvas.arc(pointx, pointy, circleSize + 1, 0, 2 * Math.PI);
+    canvas.fill();
+  }
 }
+

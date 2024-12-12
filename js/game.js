@@ -75,13 +75,13 @@ class Game {
      */
     newHistory(move) {
         this.history.push(move);
+        let alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
         $('#history-list').append(`
            <li class="list-group-item d-flex justify-content-between align-items-start" id="move-${move.id}">
                 <div class="ms-2 me-auto">
-                    <span class="fw-bold">${move.playerColor === BLACK ? 'Black' : 'White'}:</span>
-                    Placed at (${move.position[0]}, ${move.position[1]})
+                    <span class="fw-bold">${move.playerColor === BLACK ? '⚫' : '⚪'}:</span>
+                    (${alphabet[move.position[1]]}, ${move.position[0]+1})
                 </div>
-                <span class="badge bg-primary rounded-pill">97%</span>
             </li> 
         `);
     }
@@ -96,14 +96,14 @@ class Game {
         if (winner) {
             if (this.config.enableAI) {
                 if (winner === this.config.playerColor) {
-                    this.sendGameOverMsg('You win!');
+                    this.sendGameOverMsg($.i18n.prop('msg.win'));
                 }
                 else {
-                    this.sendGameOverMsg('You lose!');
+                    this.sendGameOverMsg($.i18n.prop('msg.lose'));
                 }
             }
             else {
-                this.sendGameOverMsg(winner === BLACK ? 'Black wins!' : 'White wins!');
+                this.sendGameOverMsg(winner === BLACK ? $.i18n.prop('msg.blackwin') : $.i18n.prop('msg.whitewin'));
             }
         }
     }
@@ -178,10 +178,10 @@ class Game {
             }
         }
         else if (this.history.length === 0) {
-            return 'No moves to regret';
+            return $.i18n.prop('warn.nomove');
         }
         else {
-            return 'Regret is not allowed';
+            return $.i18n.prop('warn.notallowed');
         }
     }
     /**
@@ -193,7 +193,7 @@ class Game {
      */
     setCell(i, j) {
         if (this.waiting) {
-            return 'AI is making a move';
+            return $.i18n.prop('warn.waiting');
         }
         let err = this.board.setCell(i, j, this.getWhoseTurn());
         if (err == null) {
@@ -212,7 +212,19 @@ class Game {
             return err;
         }
     }
-    aiMove(cells, lastMove) {
+    aiMove() {
+        let bestMove = this.getBestMove();
+        let aiColor = this.config.playerColor === BLACK ? WHITE : BLACK;
+        if(bestMove==null) {
+            bestMove = moves[0];
+        }
+        this.board.cells[bestMove[0]][bestMove[1]] = aiColor;
+        let move = new Move(aiColor, bestMove, this.historyCount++);
+        this.newHistory(move);
+        this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
+        this.waiting = false;
+    }
+    getBestMove(){
         let aiColor = this.config.playerColor === BLACK ? WHITE : BLACK;
         let humanColor = this.config.playerColor;
         let bestMove = null;
@@ -239,11 +251,7 @@ class Game {
         if(bestMove==null) {
             bestMove = moves[0];
         }
-        this.board.cells[bestMove[0]][bestMove[1]] = aiColor;
-        let move = new Move(aiColor, bestMove, this.historyCount++);
-        this.newHistory(move);
-        this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
-        this.waiting = false;
+        return bestMove;
     }
     minmax(depth, alpha, beta, playerColor) {
         let moves = this.board.getAllValidMoves(playerColor);
@@ -1053,19 +1061,10 @@ class Board {
                 }
             }
         }
-        return null;
-    }
-    _dbg(){
-        for(let i=0; i<15; i++) {
-            for(let j=0; j<15; j++) {
-                if(this._liveFour(i, j, BLACK)) {
-                    console.log('Black Live Four at', i, j);
-                }
-                else if(this._liveFour(i, j, WHITE)) {
-                    console.log('White Live Four at', i, j);
-                }
-            }
+        if(this.checkLegal() !== null) {
+            return WHITE;
         }
+        return null;
     }
 }
 
@@ -1193,17 +1192,17 @@ class Config {
         }
         if(this.enableAI) {
             if(this.playerColor === BLACK) {
-                $('#player1').text('You');
-                $('#player2').text('AI');
+                $('#player1').text("You");
+                $('#player2').text("AI");
             }
             else {
-                $('#player1').text('AI');
-                $('#player2').text('You');
+                $('#player1').text("AI");
+                $('#player2').text("You");
             }
         }
         else {
-            $('#player1').text('Player 1');
-            $('#player2').text('Player 2');
+            $('#player1').text("Player 1");
+            $('#player2').text("Player 2");
         }
     }
     /**
