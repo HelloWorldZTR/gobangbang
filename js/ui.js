@@ -24,6 +24,7 @@ let circleSize = cellSize * 0.4;
 let bg = new Image();
 let waiting = false;
 let hint = null;
+let paused = false;
 bg.src = 'assets/bg.jpg';
 bg.onload = function () {
   drawBoard();
@@ -122,8 +123,25 @@ $('#language').change(function () {
 });
 
 setInterval(() => {
-  timer.text(formatTime(game.getElapsedTime()));
+  if(!paused)
+    timer.text(formatTime(game.getElapsedTime()));
 }, 1000);
+
+$('#colorScheme').change(function () {
+  let scheme = $('#colorScheme').val();
+  if (scheme === 'auto') {
+    document.documentElement.setAttribute('data-bs-theme', window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }
+  else {
+    document.documentElement.setAttribute('data-bs-theme', scheme);
+  }
+  if(document.documentElement.getAttribute('data-bs-theme')==='dark'){
+    document.body.style.backgroundImage = 'url(assets/web_bg_dark.jpg)';
+  }
+  else {
+    document.body.style.backgroundImage = 'url(assets/web_bg.png)';
+  }
+});
 board.addEventListener("mousemove", function __handler__(evt) {
   //redraw the board
   drawBoard();
@@ -296,6 +314,13 @@ window.addEventListener('message', function (evt) {
   $('#game-over-message').text(data);
   $('#game-over').modal('show');
 });
+$('#pause').click(() => {
+  paused = true;
+  $('#pause-modal').modal('show');
+});
+$('#resume').click(() => {
+  paused = false;
+});
 board.addEventListener("click", function __handler__(evt) {
   // Get the mouse position
   let x = evt.clientX;
@@ -379,4 +404,3 @@ function drawBoard() {
     canvas.fill();
   }
 }
-

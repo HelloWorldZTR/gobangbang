@@ -11,7 +11,7 @@
     font-weight: bold;
 }
 body{
-    background-image: url(web_bg.png);
+    background-image: url(../assets/web_bg.png);
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;

@@ -17,7 +17,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav flex-row">
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-toggle="modal" data-i18n="settings"
                         data-target="#settings">Settings</a>
@@ -85,7 +85,8 @@
                             <select id="colorScheme" name="colorScheme">
                                 <option value="light" data-i18n="settings.colorscheme.light">Light</option>
                                 <option value="dark" data-i18n="settings.colorscheme.dark">Dark</option>
-                                <option value="auto" data-i18n="settings.colorscheme.auto">System Setting</option>
+                                <option value="auto" data-i18n="settings.colorscheme.auto" selected>System Setting
+                                </option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -122,6 +123,24 @@
             </div>
         </div>
     </div>
+    <!--Pause Modal-->
+    <div class="modal fade" id="pause-modal" tabindex="-1" role="dialog" aria-labelledby="pause-modal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pause-title" data-i18n="pause">Pause</h5>
+                </div>
+                <div class="modal-body">
+                    <p data-i18n="pause.message">Game Paused</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="resume"
+                        data-i18n="pause.resume">Resume</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!--Main-->
     <div class="container">
         <div class="row">
@@ -148,6 +167,7 @@
                         <!--Player-->
                         <p>⚫: <span id="player1"></span></p>
                         <p>⚪: <span id="player2"></span></p>
+                        <button class="btn btn-primary" id="pause" data-i18n="pause" data-paused="false">Pause</button>
                     </div>
                 </div>
                 <!--Game History-->
