@@ -6,6 +6,15 @@ const EMPTY = 0;
 const MAX_MOVES = 10;
 const MAX_DEPTH = 1;
 
+function safeProp(prop, defaultValue) {
+    let res = defaultValue;
+    try {
+        res = $.i18n.prop(prop);
+    } catch (err) {
+        res = defaultValue;
+    }
+    return res;
+}
 /**
  * @class Game
  * @classdesc Represents the game. Contains the game state and rules.
@@ -96,14 +105,14 @@ class Game {
         if (winner) {
             if (this.config.enableAI) {
                 if (winner === this.config.playerColor) {
-                    this.sendGameOverMsg($.i18n.prop('msg.win'));
+                    this.sendGameOverMsg(safeProp('msg.win', 'You win!'));
                 }
                 else {
-                    this.sendGameOverMsg($.i18n.prop('msg.lose'));
+                    this.sendGameOverMsg(safeProp('msg.lose', 'You lose!'));
                 }
             }
             else {
-                this.sendGameOverMsg(winner === BLACK ? $.i18n.prop('msg.blackwin') : $.i18n.prop('msg.whitewin'));
+                this.sendGameOverMsg(winner === BLACK ? safeProp('msg.blackwin', 'Black Wins!!') : safeProp('msg.whitewin', 'White Wins!!'));
             }
         }
     }
@@ -178,10 +187,10 @@ class Game {
             }
         }
         else if (this.history.length === 0) {
-            return $.i18n.prop('warn.nomove');
+            return safeProp('warn.nomove', 'No move to regret!');
         }
         else {
-            return $.i18n.prop('warn.notallowed');
+            return safeProp('warn.notallowed', 'Regret is not allowed!');
         }
     }
     /**
@@ -193,7 +202,7 @@ class Game {
      */
     setCell(i, j) {
         if (this.waiting) {
-            return $.i18n.prop('warn.waiting');
+            return safeProp('warn.waiting', 'Please wait for the AI to make a move!');
         }
         let err = this.board.setCell(i, j, this.getWhoseTurn());
         if (err == null) {

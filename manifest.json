@@ -1,0 +1,13 @@
+{
+    "name": "Gobangbang a renju game",
+    "short_name": "Gobang",
+    "display": "standalone",
+    "start_url": "/",
+    "icons": [
+      {
+        "src": "assets/ico.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }
+    ]
+  }
