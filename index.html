@@ -7,6 +7,10 @@
     <title>Bootstrap Template</title>
     <link rel="stylesheet" href="css/style.css">
     <link href="includes/bootstrap.min.css" rel="stylesheet">
+    <meta name="description" content="A simple Gomoku game">
+    <meta name="keywords" content="Gomoku, Game, AI">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="manifest" href="manifest.json">
 </head>
 
 <header>
@@ -258,6 +262,11 @@
         <source src="assets/click.mp3" type="audio/mpeg">
     </audio>
     <!--Scripts-->
+    <script>
+        if(navigator.serviceWorker!=null){
+            navigator.serviceWorker.register('js/sw.js');
+        }
+    </script>
     <script src="includes/jquery.min.js"></script>
     <script src="includes/jquery.i18n.properties.js"></script>
     <script src="js/game.js"></script>
