@@ -91,7 +91,7 @@ $(document).ready(function () {
   //Initialize i18n
   jQuery.i18n.properties({
     name: 'strings', 
-    path: '../bundles/', 
+    path: 'bundles/', 
     mode: 'map',
     callback: function () {
       $('body').find('*').toArray().forEach((cur) => {
@@ -108,7 +108,7 @@ $('#language').change(function () {
   console.log(lang);
   jQuery.i18n.properties({
     name: 'strings', 
-    path: '../bundles/', 
+    path: 'bundles/', 
     mode: 'map', 
     language: lang, 
     callback: function () {
