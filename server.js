@@ -2,7 +2,6 @@ var http = require('http');
 var fs = require('fs');
 var url = require('url');
  
- 
 // 创建服务器
 http.createServer( function (request, response) {  
    // 解析请求，包括文件名
@@ -14,9 +13,7 @@ http.createServer( function (request, response) {
     if(pathname == '/'){
         pathname = '/index.html';
     }
-    // 去除参数
-    pathname = pathname.replace(/\?.*/,'');
-
+    
    // 从文件系统中读取请求的文件内容
    fs.readFile(__dirname+pathname, function (err, data) {
       if (err) {
