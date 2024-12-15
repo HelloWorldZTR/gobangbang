@@ -183,36 +183,10 @@
                         <h3 data-i18n="gameinfo">Game Info</h3>
                     </div>
                     <div class="card-body">
-                        <!--Timer-->
-                        <p><span data-i18n="times">Time Elapsed:</span> <span id="timer"> 00:00:00</span></p>
-                        <!--Player-->
-                        <p>⚫: <span id="player1"></span></p>
-                        <p>⚪: <span id="player2"></span></p>
-                        <button class="btn btn-primary" id="pause" data-i18n="pause" data-paused="false">Pause</button>
+                       
                     </div>
                 </div>
-                <!--Game History-->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="btn-group">
-                            <button class="btn btn-secondary" type="button" data-toggle="collapse"
-                                data-target="#history" aria-expanded="true" aria-controls="history" data-i18n="history">
-                                Show History
-                            </button>
-                            <button class="btn btn-primary" type="button" id="regret" data-i18n="regret">Regret</button>
-                            <button class="btn btn-danger" type="button" id="hint" data-i18n="hint">Hint</button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="collapse" id="history">
-                            <ol class="list-group list-group-numbered" id="history-list">
-                                <!--History List-->
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-                <!--Replay-->
-                <!-- <div class="card">
+               <div class="card">
                     <div class="card-header">
                         <h3 data-i18n="replay">Replay</h3>
                     </div>
@@ -258,26 +232,10 @@
                             </button>
                         </div>
                     </div>
-                </div> -->
-                <!-- <div class="card">
-                    <div class="card-header">
-                        <h3>Debug Info</h3>
-                    </div>
-                    <div class="card-body">
-                        <p id="mousepos"></p>
-                        <p id="selected"></p>
-                    </div>
-                </div> -->
-
+                </div> 
             </div>
         </div>
     </div>
-    <audio preload="metadata" id="bgm" loop style="display: none;">
-        <source src="assets/bgm.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="click" style="display: none;">
-        <source src="assets/click.mp3" type="audio/mpeg">
-    </audio>
     <!--Scripts-->
     <script>
         if(navigator.serviceWorker!=null){
@@ -286,8 +244,6 @@
     </script>
     <script src="includes/jquery.min.js"></script>
     <script src="includes/jquery.i18n.properties.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/ui.js"></script>
     <script src="js/replay.js"></script>
     <script src="includes/popper.min.js"></script>
     <script src="includes/bootstrap.min.js"></script>

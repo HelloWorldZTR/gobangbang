@@ -72,6 +72,15 @@ function formatTime(time) {
 }
 
 // Event listeners
+()=>{
+  let preferredLanguage = window.navigator.language;
+  if(preferredLanguage==='zh-CN'){
+    $('#language').val('zh');
+  }
+  else{
+    $('#language').val('en');
+  }
+}
 window.addEventListener('resize', function () {
   $('#board').attr('width', getBoardSize());
   $('#board').attr('height', getBoardSize());
@@ -265,6 +274,15 @@ $('#saveBtn').click(() => {
   a.download = `gamesave-${new Date().toISOString()}.json`;
   a.click();
   URL.revokeObjectURL(url);
+});
+$('#review').click(()=>{
+  let reviewData = game.getReviewData();
+  let blob = new Blob([reviewData], { type: 'text/plain' });
+  let url = URL.createObjectURL(blob);
+  let a = document.createElement('a');
+  a.href = url;
+  a.download = `review-${new Date().toISOString()}.txt`;
+  a.click();
 });
 // Prevent the user from leaving the page without saving the game
 window.addEventListener('beforeunload', function (evt) {

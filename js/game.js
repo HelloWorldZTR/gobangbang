@@ -89,7 +89,7 @@ class Game {
            <li class="list-group-item d-flex justify-content-between align-items-start" id="move-${move.id}">
                 <div class="ms-2 me-auto">
                     <span class="fw-bold">${move.playerColor === BLACK ? '⚫' : '⚪'}:</span>
-                    (${alphabet[move.position[1]]}, ${move.position[0]+1})
+                    (${alphabet[move.position[1]]}, ${move.position[0] + 1})
                 </div>
             </li> 
         `);
@@ -128,6 +128,44 @@ class Game {
             elapsedTime: this.elapasedTime
         };
         return JSON.stringify(data);
+    }
+    /**
+     * Get the history data of the game in a string format
+     * @returns {string} - The review data of the game
+     */
+    getReviewData() {
+        let data = String();
+        let board_tmp = new Array(15).fill(null).map(() => new Array(15).fill(EMPTY));
+        for (let i = 0; i < this.history.length; i++) {
+            let move = this.history[i];
+            board_tmp[move.position[0]][move.position[1]] = move.playerColor;
+            let alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O'];
+            data += (move.playerColor === BLACK ? '⚫' : '⚪') 
+            + ' (' + (move.position[1]+1) + ', ' + (alphabet[move.position[0]]) + ')\n';
+            //Print board with ascii
+            data += '┌──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┐\n';
+            for (let i = 0; i < 15; i++) {
+                data += '│';
+                for (let j = 0; j < 15; j++) {
+                    if (board_tmp[j][i] === BLACK) {
+                        data += '⚫';
+                    }
+                    else if (board_tmp[j][i] === WHITE) {
+                        data += '⚪';
+                    }
+                    else {
+                        data += '  ';
+                    }
+                    data += '│';
+                }
+                data += '\n';
+                if (i < 14) {
+                    data += '├──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┤\n';
+                }
+            }
+            data += '└──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┘\n';
+        }
+        return data;
     }
     /**
      * Load a game from a string(JSON format)
@@ -170,7 +208,7 @@ class Game {
      */
     regret() {
         if (this.config.allowRegret && this.history.length > 0) {
-            if(this.config.enableAI) {
+            if (this.config.enableAI) {
                 //If AI is enabled, we need to regret two moves
                 //Because the last move is made by the AI
                 let move = this.history.pop();
@@ -224,7 +262,7 @@ class Game {
     aiMove() {
         let bestMove = this.getBestMove();
         let aiColor = this.config.playerColor === BLACK ? WHITE : BLACK;
-        if(bestMove==null) {
+        if (bestMove == null) {
             bestMove = moves[0];
         }
         this.board.cells[bestMove[0]][bestMove[1]] = aiColor;
@@ -233,17 +271,17 @@ class Game {
         this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
         this.waiting = false;
     }
-    getBestMove(){
+    getBestMove() {
         let aiColor = this.config.playerColor === BLACK ? WHITE : BLACK;
         let humanColor = this.config.playerColor;
         let bestMove = null;
         let bestScore = Infinity;
         let moves = this.board.getAllValidMoves(aiColor);
-        console.log(moves.slice(0, MAX_MOVES)); 
+        console.log(moves.slice(0, MAX_MOVES));
         //If the AI is white we want to minimize the score
         for (let i = 0; i < Math.min(MAX_MOVES, moves.length); i++) {
             let move = moves[i];
-            if(move[2]>=100000) {
+            if (move[2] >= 100000) {
                 //If the AI can win in one move, or lose in one move,
                 // just make the move
                 bestMove = move;
@@ -252,12 +290,12 @@ class Game {
             this.board.cells[move[0]][move[1]] = aiColor;
             let score = this.minmax(MAX_DEPTH, -Infinity, Infinity, humanColor);
             this.board.cells[move[0]][move[1]] = EMPTY;
-            if(score<bestScore) {
+            if (score < bestScore) {
                 bestScore = score;
                 bestMove = move;
             }
         }
-        if(bestMove==null) {
+        if (bestMove == null) {
             bestMove = moves[0];
         }
         return bestMove;
@@ -407,25 +445,25 @@ class Board {
         if (this._liveFour(x, y, playerColor)) {//3rd priority
             totalScore += 200000;
         }
-        if(this._liveFour(x, y, otherColor)) {//2nd priority
+        if (this._liveFour(x, y, otherColor)) {//2nd priority
             totalScore += 100000;
         }
-        if(this._liveThree(x, y, otherColor)) {
+        if (this._liveThree(x, y, otherColor)) {
             totalScore += 10000;
         }
-        if(this._deadFour(x, y, otherColor)) {
+        if (this._deadFour(x, y, otherColor)) {
             totalScore += 10000;
         }
         if (this._liveThree(x, y, playerColor)) {
             totalScore += 10000;
         }
-        if(this._deadFour(x, y, playerColor)) {
+        if (this._deadFour(x, y, playerColor)) {
             totalScore += 1000;
         }
-        if(this._nearSomething(x, y)) {
+        if (this._nearSomething(x, y)) {
             totalScore += 100;
         }
-        if(this._nearCenter(x, y)) {
+        if (this._nearCenter(x, y)) {
             totalScore += 10;
         }
         if (this._checkForbidden(x, y, playerColor)) {
@@ -437,67 +475,67 @@ class Board {
         let directions = [[1, 0], [0, 1], [1, 1], [1, -1]];
         //horizontal
         let count = 1;
-        let tx=x, ty=y;
-        while(tx>0 && this.cells[tx-1][ty]===playerColor) {
+        let tx = x, ty = y;
+        while (tx > 0 && this.cells[tx - 1][ty] === playerColor) {
             tx--;
             count++;
         }
         tx = x;
-        while(tx<14 && this.cells[tx+1][ty]===playerColor) {
+        while (tx < 14 && this.cells[tx + 1][ty] === playerColor) {
             tx++;
             count++;
         }
-        if(count>=5) {
+        if (count >= 5) {
             return true;
         }
         //vertical
         count = 1;
-        tx=x, ty=y;
-        while(ty>0 && this.cells[tx][ty-1]===playerColor) {
+        tx = x, ty = y;
+        while (ty > 0 && this.cells[tx][ty - 1] === playerColor) {
             ty--;
             count++;
         }
         ty = y;
-        while(ty<14 && this.cells[tx][ty+1]===playerColor) {
+        while (ty < 14 && this.cells[tx][ty + 1] === playerColor) {
             ty++;
             count++;
         }
-        if(count>=5) {
+        if (count >= 5) {
             return true;
         }
         //diagonal
         count = 1;
-        tx=x, ty=y;
-        while(tx>0 && ty>0 && this.cells[tx-1][ty-1]===playerColor) {
+        tx = x, ty = y;
+        while (tx > 0 && ty > 0 && this.cells[tx - 1][ty - 1] === playerColor) {
             tx--;
             ty--;
             count++;
         }
         tx = x;
         ty = y;
-        while(tx<14 && ty<14 && this.cells[tx+1][ty+1]===playerColor) {
+        while (tx < 14 && ty < 14 && this.cells[tx + 1][ty + 1] === playerColor) {
             tx++;
             ty++;
             count++;
         }
-        if(count>=5) {
+        if (count >= 5) {
             return true;
         }
         count = 1;
-        tx=x, ty=y;
-        while(tx>0 && ty<14 && this.cells[tx-1][ty+1]===playerColor) {
+        tx = x, ty = y;
+        while (tx > 0 && ty < 14 && this.cells[tx - 1][ty + 1] === playerColor) {
             tx--;
             ty++;
             count++;
         }
         tx = x;
         ty = y;
-        while(tx<14 && ty>0 && this.cells[tx+1][ty-1]===playerColor) {
+        while (tx < 14 && ty > 0 && this.cells[tx + 1][ty - 1] === playerColor) {
             tx++;
             ty--;
             count++;
         }
-        if(count>=5) {
+        if (count >= 5) {
             return true;
         }
         return false;
@@ -696,23 +734,23 @@ class Board {
         if (tx === 14 || ty === 0 || this.cells[tx + 1][ty - 1] === otherColor) {
             flagd2 = false;
         }
-        if(count<4) {
+        if (count < 4) {
             flagd2 = false;
         }
         return flagh || flagv || flagd1 || flagd2;
     }
     _nearSomething(x, y) {
         let cnt = 0;
-        for(let i = x-1; i<=x+1; i++) {
-            for(let j = y-1; j<=y+1; j++) {
-                if(i>=0 && i<15 && j>=0 && j<15 && this.cells[i][j] !== EMPTY) {
+        for (let i = x - 1; i <= x + 1; i++) {
+            for (let j = y - 1; j <= y + 1; j++) {
+                if (i >= 0 && i < 15 && j >= 0 && j < 15 && this.cells[i][j] !== EMPTY) {
                     return true;
                 }
             }
         }
     }
     _nearCenter(x, y) {
-        return (x>=6 && x<=8 && y>=6 && y<=8);
+        return (x >= 6 && x <= 8 && y >= 6 && y <= 8);
     }
     _deadFour(x, y, playerColor) {
         let otherColor = (playerColor === BLACK ? WHITE : BLACK);
@@ -725,7 +763,7 @@ class Board {
             tx--;
             count++;
         }
-        if(tx==0 || this.cells[tx-1][ty]===otherColor) {
+        if (tx == 0 || this.cells[tx - 1][ty] === otherColor) {
             countDead++;
         }
         tx = x;
@@ -733,10 +771,10 @@ class Board {
             tx++;
             count++;
         }
-        if(tx==14 || this.cells[tx+1][ty]===otherColor) {
+        if (tx == 14 || this.cells[tx + 1][ty] === otherColor) {
             countDead++;
         }
-        if(count==4 && countDead==1) {
+        if (count == 4 && countDead == 1) {
             return true;
         }
         //vertical
@@ -747,7 +785,7 @@ class Board {
             ty--;
             count++;
         }
-        if(ty==0 || this.cells[tx][ty-1]===otherColor) {
+        if (ty == 0 || this.cells[tx][ty - 1] === otherColor) {
             countDead++;
         }
         ty = y;
@@ -755,10 +793,10 @@ class Board {
             ty++;
             count++;
         }
-        if(ty==14 || this.cells[tx][ty+1]===otherColor) {
+        if (ty == 14 || this.cells[tx][ty + 1] === otherColor) {
             countDead++;
         }
-        if(count==4 && countDead==1) {
+        if (count == 4 && countDead == 1) {
             return true;
         }
         //diagonal
@@ -770,7 +808,7 @@ class Board {
             ty--;
             count++;
         }
-        if(tx==0 || ty==0 || this.cells[tx-1][ty-1]===otherColor) {
+        if (tx == 0 || ty == 0 || this.cells[tx - 1][ty - 1] === otherColor) {
             countDead++;
         }
         tx = x;
@@ -780,10 +818,10 @@ class Board {
             ty++;
             count++;
         }
-        if(tx==14 || ty==14 || this.cells[tx+1][ty+1]===otherColor) {
+        if (tx == 14 || ty == 14 || this.cells[tx + 1][ty + 1] === otherColor) {
             countDead++;
         }
-        if(count==4 && countDead==1) {
+        if (count == 4 && countDead == 1) {
             return true;
         }
         count = 1;
@@ -794,7 +832,7 @@ class Board {
             ty++;
             count++;
         }
-        if(tx==0 || ty==14 || this.cells[tx-1][ty+1]===otherColor) {
+        if (tx == 0 || ty == 14 || this.cells[tx - 1][ty + 1] === otherColor) {
             countDead++;
         }
         tx = x;
@@ -804,10 +842,10 @@ class Board {
             ty--;
             count++;
         }
-        if(tx==14 || ty==0 || this.cells[tx+1][ty-1]===otherColor) {
+        if (tx == 14 || ty == 0 || this.cells[tx + 1][ty - 1] === otherColor) {
             countDead++;
         }
-        if(count==4 && countDead==1) {
+        if (count == 4 && countDead == 1) {
             return true;
         }
         return false;
@@ -820,14 +858,14 @@ class Board {
                     // if (this._checkForbidden(i, j, playerColor)) {
                     //     continue;
                     // }
-                   // else {
-                        moves.push([i, j, this.evaluatePos(i, j, playerColor)]);
+                    // else {
+                    moves.push([i, j, this.evaluatePos(i, j, playerColor)]);
                     //}
                 }
             }
         }
-        moves.sort((a, b)=>{
-            return b[2]-a[2];
+        moves.sort((a, b) => {
+            return b[2] - a[2];
         })
         return moves;
     }
@@ -1070,7 +1108,7 @@ class Board {
                 }
             }
         }
-        if(this.checkLegal() !== null) {
+        if (this.checkLegal() !== null) {
             return WHITE;
         }
         return null;
@@ -1188,19 +1226,19 @@ class Config {
         $('#enableAI').prop('checked', this.enableAI);
         $('#colorScheme').val(this.colorScheme);
         //Actuate the configuration
-        $('#bgm').prop('volume', this.soundVolume/100);
-        try{
+        $('#bgm').prop('volume', this.soundVolume / 100);
+        try {
             if (this.sound) {
                 $('#bgm').get(0).play();
             }
             else {
                 $('#bgm').get(0).pause();
             }
-        }catch(e) {
+        } catch (e) {
             //That's fine
         }
-        if(this.enableAI) {
-            if(this.playerColor === BLACK) {
+        if (this.enableAI) {
+            if (this.playerColor === BLACK) {
                 $('#player1').text("You");
                 $('#player2').text("AI");
             }

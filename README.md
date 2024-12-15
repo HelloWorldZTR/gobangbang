@@ -1,6 +1,15 @@
 # What this projext is for
+
 A simple five in a row game homework
-[x] - game logic
-[x] - basic user interface 
-[x] - functionalities like regret, save etc.
-[x] - i18n 
+
+- game logic
+- basic user interface 
+- AI (kinda stupid)
+- functionalities like regret, save etc.
+- i18n 
+
+## Try it online 
+
+[Try it](hiztr.cn/projects/gobangbang)
+
+[Slides]()
