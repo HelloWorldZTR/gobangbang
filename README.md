@@ -10,6 +10,6 @@ A simple five in a row game homework
 
 ## Try it online 
 
-[Try it](hiztr.cn/projects/gobangbang)
+[Try it](https://hiztr.cn/projects/gobangbang)
 
-[Slides]()
+[Slides](https://hiztr.cn/projects/gobangbang/presentation/)
