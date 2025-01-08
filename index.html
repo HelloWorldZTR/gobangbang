@@ -44,8 +44,74 @@
 </header>
 
 <body>
+    <!--Load AutoSave Modal-->
+    <div class="modal fade" id="load-modal" tabindex="-1" role="dialog" aria-labelledby="load" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="load-title" data-i18n="load">Load Game</h5>
+                </div>
+                <div class="modal-body">
+                    <p>There's an autosave of the previous round.</p>
+                    <p data-i18n="load.message">Do you want to load the autosaved game?</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="new-game" type="button" class="btn btn-secondary" data-dismiss="modal"
+                        data-i18n="load.no">New Game</button>
+                    <button id="load-autosave" type="button" class="btn btn-primary" data-dismiss="modal" id="load-yes"
+                        data-i18n="load.yes">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Save List-->
+    <div class="modal fade" id="save-modal" tabindex="-1" role="dialog" aria-labelledby="save" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="save-title" data-i18n="save">Save Game</h5>
+                </div>
+                <div class="modal-body">
+                    <p data-i18n="save.message">Choose a slot to save the game.</p>
+                    <div class="list-group" id="save-list">
+                        <!--Save List-->
+                        <ul>
+                            <li class="list-group-item" id="save-0">Auto Save</li>
+                            <li class="list-group-item" id="save-1">Slot 1</li>
+                            <li class="list-group-item" id="save-2">Slot 2</li>
+                            <li class="list-group-item" id="save-3">Slot 3</li>
+                            <li class="list-group-item" id="save-4">Slot 4</li>
+                            <li class="list-group-item" id="save-5">Slot 5</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        data-i18n="save.cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Load List-->
+    <div class="modal fade" id="load-list" tabindex="-1" role="dialog" aria-labelledby="load-list" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="load-list-title" data-i18n="load">Load Game</h5>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                        data-i18n="load.cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!--Online Game Modal-->
-    <div class="modal fade" id="online-game" tabindex="-1" role="dialog" aria-labelledby="online-game" aria-hidden="true">
+    <div class="modal fade" id="online-game" tabindex="-1" role="dialog" aria-labelledby="online-game"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -93,13 +159,13 @@
                             <label for="debug" data-i18n="settings.debug">Debug Mode</label>
                             <input class="form-switch" id="debug" type="checkbox" name="debug" value="true">
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label for="language">Language</label>
                             <select id="language" name="language">
                                 <option value="en">English</option>
                                 <option value="zh">简体中文</option>
                             </select>
-                        </div>
+                        </div> -->
                         <div class="form-group">
                             <label for="colorScheme" data-i18n="settings.colorscheme">Color Scheme</label>
                             <select id="colorScheme" name="colorScheme">
@@ -279,13 +345,12 @@
         <source src="assets/click.mp3" type="audio/mpeg">
     </audio>
     <!--Scripts-->
-    <script>
+    <!-- <script>
         if(navigator.serviceWorker!=null){
             navigator.serviceWorker.register('js/sw.js');
         }
-    </script>
+    </script> -->
     <script src="includes/jquery.min.js"></script>
-    <script src="includes/jquery.i18n.properties.js"></script>
     <script src="js/game.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/replay.js"></script>

@@ -9,6 +9,7 @@ let errorDisplayDiv = $('#error');
 let board = $('#board')[0];
 let timer = $('#timer');
 let updateBtn = $('#update');
+let autosaveData = localStorage.getItem('gameAutoSave');
 // UI variables
 let selectedPoint = null;
 let lastSelectedPoint = null;
@@ -72,15 +73,16 @@ function formatTime(time) {
 }
 
 // Event listeners
-()=>{
-  let preferredLanguage = window.navigator.language;
-  if(preferredLanguage==='zh-CN'){
-    $('#language').val('zh');
-  }
-  else{
-    $('#language').val('en');
-  }
-}
+// ()=>{
+//   let preferredLanguage = window.navigator.language;
+//   if(preferredLanguage==='zh-CN'){
+//     $('#language').val('zh');
+//   }
+//   else{
+//     $('#language').val('en');
+//   }
+// }
+
 window.addEventListener('resize', function () {
   $('#board').attr('width', getBoardSize());
   $('#board').attr('height', getBoardSize());
@@ -97,39 +99,43 @@ $(document).ready(function () {
   $('#board').attr('width', getBoardSize());
   $('#board').attr('height', getBoardSize());
   drawBoard();
-  //Initialize i18n
-  jQuery.i18n.properties({
-    name: 'strings', 
-    path: 'bundles/', 
-    mode: 'map',
-    callback: function () {
-      $('body').find('*').toArray().forEach((cur) => {
-        if (cur.hasAttribute('data-i18n')) {
-          let key = cur.getAttribute('data-i18n');
-          cur.innerHTML = jQuery.i18n.prop(key);
-        }
-      });
-    }
-  });
+  //If there is an autosave, ask the player if they want to load it
+  if (autosaveData) {
+    $('#load-modal').modal('show');
+  }
+  // //Initialize i18n
+  // jQuery.i18n.properties({
+  //   name: 'strings', 
+  //   path: 'bundles/', 
+  //   mode: 'map',
+  //   callback: function () {
+  //     $('body').find('*').toArray().forEach((cur) => {
+  //       if (cur.hasAttribute('data-i18n')) {
+  //         let key = cur.getAttribute('data-i18n');
+  //         cur.innerHTML = jQuery.i18n.prop(key);
+  //       }
+  //     });
+  //   }
+  // });
 });
-$('#language').change(function () {
-  let lang = $('#language').val();
-  console.log(lang);
-  jQuery.i18n.properties({
-    name: 'strings', 
-    path: 'bundles/', 
-    mode: 'map', 
-    language: lang, 
-    callback: function () {
-      $('body').find('*').toArray().forEach((cur) => {
-        if (cur.hasAttribute('data-i18n')) {
-          let key = cur.getAttribute('data-i18n');
-          cur.innerHTML = jQuery.i18n.prop(key);
-        }
-      });
-    }
-  });
-});
+// $('#language').change(function () {
+//   let lang = $('#language').val();
+//   console.log(lang);
+//   jQuery.i18n.properties({
+//     name: 'strings', 
+//     path: 'bundles/', 
+//     mode: 'map', 
+//     language: lang, 
+//     callback: function () {
+//       $('body').find('*').toArray().forEach((cur) => {
+//         if (cur.hasAttribute('data-i18n')) {
+//           let key = cur.getAttribute('data-i18n');
+//           cur.innerHTML = jQuery.i18n.prop(key);
+//         }
+//       });
+//     }
+//   });
+// });
 
 setInterval(() => {
   if(!paused)
@@ -151,6 +157,7 @@ $('#colorScheme').change(function () {
     document.body.style.backgroundImage = 'url(assets/web_bg.png)';
   }
 });
+
 board.addEventListener("mousemove", function __handler__(evt) {
   //redraw the board
   drawBoard();
@@ -284,21 +291,27 @@ $('#review').click(()=>{
   a.download = `review-${new Date().toISOString()}.txt`;
   a.click();
 });
-// Prevent the user from leaving the page without saving the game
+// Save the game to local storage
 window.addEventListener('beforeunload', function (evt) {
   let data = game.saveGame();
-  this.localStorage.setItem('gameSave', data);
-  evt.preventDefault();
+  if(game.history.length>0)
+    this.localStorage.setItem('gameAutoSave', data);
 });
+
 // Load the game from local storage
-let data = this.localStorage.getItem('gameSave');
-if (data) {
-  let err = game.loadGame(data);
+$('#load-autosave').click(()=>{
+  let err = game.loadGame(autosaveData);
   if (err) {
     displayError(err);
   }
   drawBoard();
-}
+});
+$('#new-game').click(()=>{
+  game.newGame();
+  drawBoard();
+});
+
+//Load the game from a file
 $('#loadBtn').click(() => {
   // Upload a file
   let input = document.createElement('input');
@@ -408,6 +421,11 @@ function drawBoard() {
         canvas.fillStyle = color;
         canvas.beginPath();
         canvas.arc(pointx, pointy, circleSize, 0, 2 * Math.PI);
+        canvas.fill();
+        let colorHighLight = game.board.cells[i][j] === BLACK ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
+        canvas.fillStyle = colorHighLight;
+        canvas.beginPath();
+        canvas.arc(pointx+circleSize*0.1, pointy+circleSize*0.1, circleSize*0.6, 0, 2 * Math.PI);
         canvas.fill();
       }
     }
