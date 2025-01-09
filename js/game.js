@@ -15,6 +15,28 @@ function safeProp(prop, defaultValue) {
     }
     return res;
 }
+const soundeffects = {
+    'move': '#move-sound',
+    'win': '#win-sound',
+    'lose': '#lose-sound',
+    'bgm': '#bgm-sound'
+}
+function playsound(sound) {
+    if(soundeffects[sound]) {
+        console.info('Playing sound effect: ' + sound);
+        $(soundeffects[sound])[0].currentTime = 0;
+        $(soundeffects[sound])[0].play();
+    }
+    else {
+        console.error('Sound effect not found!');
+    }
+}
+function setVolume(volume, sound) {
+    if(sound) volume = 0;
+    for(i in soundeffects) {
+        $(soundeffects[i])[0].volume = volume;
+    }
+}
 
 /**
  * @class Game
@@ -35,6 +57,7 @@ class Game {
         if (this.config.enableAI && this.config.playerColor === WHITE) {
             //If AI is the first to make a move, place a piece at the center
             this.board.cells[7][7] = BLACK;
+            playsound('move');
             let move = new Move(BLACK, [7, 7], this.historyCount++);
             this.newHistory(move);
             this.whoseTurn = WHITE;
@@ -106,9 +129,11 @@ class Game {
         if (winner) {
             if (this.config.enableAI) {
                 if (winner === this.config.playerColor) {
+                    playsound('win');
                     this.sendGameOverMsg(safeProp('msg.win', 'You win!'));
                 }
                 else {
+                    playsound('lose');
                     this.sendGameOverMsg(safeProp('msg.lose', 'You lose!'));
                 }
             }
@@ -245,6 +270,7 @@ class Game {
         }
         let err = this.board.setCell(i, j, this.getWhoseTurn());
         if (err == null) {
+            playsound('move');
             let move = new Move(this.getWhoseTurn(), [i, j], this.historyCount++);
             this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
             this.newHistory(move);
@@ -267,6 +293,7 @@ class Game {
             bestMove = moves[0];
         }
         this.board.cells[bestMove[0]][bestMove[1]] = aiColor;
+        playsound('move');
         let move = new Move(aiColor, bestMove, this.historyCount++);
         this.newHistory(move);
         this.whoseTurn = (this.whoseTurn === BLACK ? WHITE : BLACK);
@@ -1227,18 +1254,8 @@ class Config {
         $('#enableAI').prop('checked', this.enableAI);
         $('#colorScheme').val(this.colorScheme);
         //Actuate the configuration
-        $('#bgm').prop('volume', this.soundVolume / 100);
-        
-        try {
-            if (this.sound) {
-                $('#bgm').get(0).play();
-            }
-            else {
-                $('#bgm').get(0).pause();
-            }
-        } catch (e) {
-            //That's fine
-        }
+        setVolume(this.soundVolume/100, this.sound);
+        playsound('bgm');
         if (this.enableAI) {
             if (this.playerColor === BLACK) {
                 $('#player1').text("You");

@@ -114,6 +114,7 @@ function loadSave(i) {
     if (err) {
       displayError(err);
     }
+    drawBoard();
     return;
   }
   checkSaves();
