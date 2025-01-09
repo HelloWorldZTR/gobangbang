@@ -448,6 +448,9 @@ $('#pause').click(() => {
 $('#resume').click(() => {
   paused = false;
 });
+/**
+ * Get the position of the mouse click and place a piece on the board
+ */
 board.addEventListener("click", function __handler__(evt) {
   // Get the mouse position
   let x = evt.clientX;
@@ -517,11 +520,6 @@ function drawBoard() {
         canvas.fillStyle = color;
         canvas.beginPath();
         canvas.arc(pointx, pointy, circleSize, 0, 2 * Math.PI);
-        canvas.fill();
-        let colorHighLight = game.board.cells[i][j] === BLACK ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.6)';
-        canvas.fillStyle = colorHighLight;
-        canvas.beginPath();
-        canvas.arc(pointx+circleSize*0.1, pointy+circleSize*0.1, circleSize*0.6, 0, 2 * Math.PI);
         canvas.fill();
       }
     }

@@ -4,7 +4,7 @@ const WHITE = 2;
 const EMPTY = 0;
 
 const MAX_MOVES = 10;
-const MAX_DEPTH = 1;
+let MAX_DEPTH = 1;
 
 function safeProp(prop, defaultValue) {
     let res = defaultValue;
@@ -286,7 +286,13 @@ class Game {
             return err;
         }
     }
+    /**
+     * Call the AI to make a move
+     */
     aiMove() {
+        if(this.history.length>14*14/2) {
+            MAX_DEPTH = 2;
+        }
         let bestMove = this.getBestMove();
         let aiColor = this.config.playerColor === BLACK ? WHITE : BLACK;
         if (bestMove == null) {
