@@ -17,3 +17,6 @@ body{
     background-attachment: fixed;
     background-position: center;
 }
+.save-date{
+    color: rgba(0,0,0,0.8);
+}

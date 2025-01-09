@@ -10,6 +10,9 @@ let board = $('#board')[0];
 let timer = $('#timer');
 let updateBtn = $('#update');
 let autosaveData = localStorage.getItem('gameAutoSave');
+let saveData = JSON.stringify(localStorage.getItem('gameSaves'));
+let saveTime = JSON.stringify(localStorage.getItem('saveTime'));
+const SAVE_SLOTS = 5;
 // UI variables
 let selectedPoint = null;
 let lastSelectedPoint = null;
@@ -71,7 +74,88 @@ function formatTime(time) {
     return `${minutes}:${seconds}`;
   }
 }
-
+function checkSaves() {
+  if(localStorage.getItem('gameSaves')===null){
+    console.warn('No save data found, initializing save data');
+    localStorage.setItem('gameSaves', JSON.stringify([]));
+  }
+  if(localStorage.getItem('saveTime')===null){
+    localStorage.setItem('saveTime', JSON.stringify([]));
+  }
+  try {
+    saveData = JSON.parse(localStorage.getItem('gameSaves'));
+    saveTime = JSON.parse(localStorage.getItem('saveTime'));
+  }
+  catch (e) {
+    console.error('Game save data corrupted');
+    console.error(e);
+    localStorage.setItem('gameSaves', JSON.stringify([]));
+    localStorage.setItem('saveTime', JSON.stringify([]));
+    saveData = [];
+    saveTime = [];
+  }
+}
+function saveGame(i) {
+  checkSaves();
+  if(saveData[i]!==null) {
+    let yesno = window.confirm('Are you sure you want to overwrite this save?');
+    if(!yesno) return;
+  }
+  let data = game.saveGame();
+  saveData[i] = data;
+  saveTime[i] = new Date().toISOString();
+  localStorage.setItem('gameSaves', JSON.stringify(saveData));
+  localStorage.setItem('saveTime', JSON.stringify(saveTime));
+  updateSaveSlots();
+}
+function loadSave(i) {
+  if(i===0) {
+    let err = game.loadGame(autosaveData);
+    if (err) {
+      displayError(err);
+    }
+    return;
+  }
+  checkSaves();
+  if(saveData[i]===null) {
+    window.alert('Slot is empty');
+    return;
+  }
+  let data = saveData[i];
+  let err = game.loadGame(data);
+  if (err) {
+    displayError(err);
+  }
+  drawBoard();
+}
+function deleteSave(i) {
+  checkSaves();
+  if(saveData[i]===null) {
+    window.alert('Slot is empty');
+    return;
+  }
+  let yesno = window.confirm('Are you sure you want to delete this save?');
+  if(!yesno) return;
+  saveData[i] = null;
+  saveTime[i] = null;
+  localStorage.setItem('gameSaves', JSON.stringify(saveData));
+  localStorage.setItem('saveTime', JSON.stringify(saveTime));
+  updateSaveSlots();
+}
+function updateSaveSlots() {
+  checkSaves();
+  for (let i = 1; i <= SAVE_SLOTS; i++) {
+    let slot = $(`#save${i}-date`);
+    if (saveData[i] !== null) {
+      slot.text(saveTime[i]);
+      console.log(saveTime[i]);
+    }
+    else {
+      slot.text('Empty');
+    }
+  }
+}
+updateSaveSlots();
 // Event listeners
 // ()=>{
 //   let preferredLanguage = window.navigator.language;
@@ -271,17 +355,17 @@ $('#regret').click(function () {
   }
   drawBoard();
 });
-$('#saveBtn').click(() => {
-  let data = game.saveGame();
-  // Save to a file for download
-  let blob = new Blob([data], { type: 'application/json' });
-  let url = URL.createObjectURL(blob);
-  let a = document.createElement('a');
-  a.href = url;
-  a.download = `gamesave-${new Date().toISOString()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-});
+// $('#saveBtn').click(() => {
+//   let data = game.saveGame();
+//   // Save to a file for download
+//   let blob = new Blob([data], { type: 'application/json' });
+//   let url = URL.createObjectURL(blob);
+//   let a = document.createElement('a');
+//   a.href = url;
+//   a.download = `gamesave-${new Date().toISOString()}.json`;
+//   a.click();
+//   URL.revokeObjectURL(url);
+// });
 $('#review').click(()=>{
   let reviewData = game.getReviewData();
   let blob = new Blob([reviewData], { type: 'text/plain' });
@@ -292,10 +376,13 @@ $('#review').click(()=>{
   a.click();
 });
 // Save the game to local storage
+// Delete the last autosave if the user hasnt made any moves
 window.addEventListener('beforeunload', function (evt) {
   let data = game.saveGame();
   if(game.history.length>0)
     this.localStorage.setItem('gameAutoSave', data);
+  else 
+    this.localStorage.removeItem('gameAutoSave');
 });
 
 // Load the game from local storage

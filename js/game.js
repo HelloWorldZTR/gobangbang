@@ -15,6 +15,7 @@ function safeProp(prop, defaultValue) {
     }
     return res;
 }
+
 /**
  * @class Game
  * @classdesc Represents the game. Contains the game state and rules.
@@ -1227,6 +1228,7 @@ class Config {
         $('#colorScheme').val(this.colorScheme);
         //Actuate the configuration
         $('#bgm').prop('volume', this.soundVolume / 100);
+        
         try {
             if (this.sound) {
                 $('#bgm').get(0).play();
