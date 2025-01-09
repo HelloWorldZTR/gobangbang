@@ -32,7 +32,7 @@ function playsound(sound) {
     }
 }
 function setVolume(volume, sound) {
-    if(sound) volume = 0;
+    if(!sound) volume = 0;
     for(i in soundeffects) {
         $(soundeffects[i])[0].volume = volume;
     }
