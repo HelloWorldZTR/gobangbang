@@ -20,3 +20,7 @@ body{
 .save-date{
     color: rgba(0,0,0,0.8);
 }
+#review-data{
+    font-size: xx-small;
+    font-family: monospace;
+}

@@ -35,14 +35,20 @@ bg.onload = function () {
 }
 
 // Helper functions
+function isMobile() {
+  return window.innerWidth < 768;
+}
 function getClientHeight() {
-  return window.innerHeight - $('header').height();
+  return window.innerHeight - $('header').height();//Remove possible padding
 }
 function getClietWidth() {
-  return window.innerWidth*0.6*0.667;
+  return window.innerWidth;
 }
 function getBoardSize() {
-  return Math.min(getClientHeight(), getClietWidth());
+  if(isMobile()) {//Single column layout
+    return Math.min(getClientHeight(), getClietWidth()*0.9);
+  }//Dual column layout
+  else return Math.min(getClientHeight(), getClietWidth()*0.6*0.667);
 }
 function getCellSize() {
   return getBoardSize() / 14;
@@ -369,12 +375,14 @@ $('#regret').click(function () {
 // });
 $('#review').click(()=>{
   let reviewData = game.getReviewData();
-  let blob = new Blob([reviewData], { type: 'text/plain' });
-  let url = URL.createObjectURL(blob);
-  let a = document.createElement('a');
-  a.href = url;
-  a.download = `review-${new Date().toISOString()}.txt`;
-  a.click();
+  $('#review-data').text(reviewData);
+  $('#review-data').css('display', 'block');
+  // let blob = new Blob([reviewData], { type: 'text/plain' });
+  // let url = URL.createObjectURL(blob);
+  // let a = document.createElement('a');
+  // a.href = url;
+  // a.download = `review-${new Date().toISOString()}.txt`;
+  // a.click();
 });
 // Save the game to local storage
 // Delete the last autosave if the user hasnt made any moves
@@ -491,13 +499,13 @@ function drawBoard() {
       let x = starPoints[i];
       let y = starPoints[j];
       canvas.beginPath();
-      canvas.arc(offset_x + x * cellSize, offset_y + y * cellSize, 5, 0, 2 * Math.PI);
+      canvas.arc(offset_x + x * cellSize, offset_y + y * cellSize, boardSize*0.01, 0, 2 * Math.PI);
       canvas.fill();
     }
   }
   /* Draw the center point */
   canvas.beginPath();
-  canvas.arc(offset_x + 7 * cellSize, offset_y + 7 * cellSize, 5, 0, 2 * Math.PI);
+  canvas.arc(offset_x + 7 * cellSize, offset_y + 7 * cellSize, boardSize*0.01, 0, 2 * Math.PI);
   canvas.fill();
   /* Draw pieces on the board */
   for (let i = 0; i < 15; i++) {

@@ -169,27 +169,27 @@ class Game {
             data += (move.playerColor === BLACK ? '⚫' : '⚪') 
             + ' (' + (move.position[1]+1) + ', ' + (alphabet[move.position[0]]) + ')\n';
             //Print board with ascii
-            data += '┌──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┬──┐\n';
+            data += '┌─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┬─┐\n';
             for (let i = 0; i < 15; i++) {
                 data += '│';
                 for (let j = 0; j < 15; j++) {
                     if (board_tmp[j][i] === BLACK) {
-                        data += '⚫';
+                        data += '▪';
                     }
                     else if (board_tmp[j][i] === WHITE) {
-                        data += '⚪';
+                        data += '▫';
                     }
                     else {
-                        data += '  ';
+                        data += ' ';
                     }
                     data += '│';
                 }
                 data += '\n';
                 if (i < 14) {
-                    data += '├──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┼──┤\n';
+                    data += '├─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┼─┤\n';
                 }
             }
-            data += '└──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┴──┘\n';
+            data += '└─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┴─┘\n';
         }
         return data;
     }
