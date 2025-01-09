@@ -1,4 +1,4 @@
-# What this projext is for
+# What this project is for
 
 A simple five in a row game homework
 

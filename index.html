@@ -250,18 +250,21 @@
                                 have changed your side. Saving
                                 changes will cause the game to restart.</span>
                         </div>
-                        <div class="form-group">
-                            <label for="enableAI" data-i18n="settings.ai">Enable AI</label>
-                            <input class="form-switch" id="enableAI" type="checkbox" name="enableAI" value="true"
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" id="enableAI" type="checkbox"  role="switch" name="enableAI" value="true"
                                 checked>
+                            <label class="form-check-label" for="enableAI" data-i18n="settings.ai">Enable AI</label>
+                            
                         </div>
-                        <div class="form-group">
-                            <lable for="allowRegret" data-i18n="settings.allow-regret">Allow Regret</lable>
-                            <input id="allowRegret" type="checkbox" name="allowRegret" value="true" checked>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" id="allowRegret" type="checkbox" role="switch" name="allowRegret" value="true" checked>
+                            <lable class="form-check-label" for="allowRegret" data-i18n="settings.allow-regret">Allow Regret</lable>
+                            
                         </div>
-                        <div class="form-group">
-                            <label for="debug" data-i18n="settings.debug">Debug Mode</label>
-                            <input class="form-switch" id="debug" type="checkbox" name="debug" value="true">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" id="debug" type="checkbox" role="switch" name="debug" value="true">
+                        
+                            <label class="form-check-label" for="debug" data-i18n="settings.debug">Debug Mode</label>
                         </div>
                         <!-- <div class="form-group">
                             <label for="language">Language</label>
@@ -270,9 +273,9 @@
                                 <option value="zh">简体中文</option>
                             </select>
                         </div> -->
-                        <div class="form-group">
+                        <div class="form-select">
                             <label for="colorScheme" data-i18n="settings.colorscheme">Color Scheme</label>
-                            <select id="colorScheme" name="colorScheme">
+                            <select class="form-select" id="colorScheme" name="colorScheme">
                                 <option value="light" data-i18n="settings.colorscheme.light">Light</option>
                                 <option value="dark" data-i18n="settings.colorscheme.dark">Dark</option>
                                 <option value="auto" data-i18n="settings.colorscheme.auto" selected>System Setting
@@ -371,7 +374,7 @@
                                 Show History
                             </button>
                             <button class="btn btn-primary" type="button" id="regret" data-i18n="regret">Regret</button>
-                            <button class="btn btn-danger" type="button" id="hint" data-i18n="hint">Hint</button>
+                            <button class="btn btn-info" type="button" id="hint" data-i18n="hint">Hint</button>
                         </div>
                     </div>
                     <div class="card-body">
