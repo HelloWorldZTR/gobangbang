@@ -22,5 +22,9 @@ body{
 }
 #review-data{
     font-size: xx-small;
-    font-family: monospace;
+    font-family: code;
+}
+@font-face {
+    font-family: 'code';
+    src: url('../assets/CascadiaCode.ttf') format('truetype');
 }
